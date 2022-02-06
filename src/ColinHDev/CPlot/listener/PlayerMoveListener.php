@@ -8,6 +8,7 @@ use ColinHDev\CPlot\attributes\BooleanAttribute;
 use ColinHDev\CPlot\attributes\BooleanListAttribute;
 use ColinHDev\CPlot\attributes\StringAttribute;
 use ColinHDev\CPlot\player\settings\SettingIDs;
+use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
@@ -24,16 +25,27 @@ class PlayerMoveListener implements Listener {
         if ($event->isCancelled()) {
             return;
         }
+        $toPosition = $event->getTo();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($toPosition->getWorld()->getFolderName());
+        if (!($worldSettings instanceof WorldSettings)) {
+            return;
+        }
+
+        $alignPlotPosition = (new BasePlot($toPosition->world->getFolderName(), $worldSettings, 0, 0))->getVector3();
+        $distanceToBorder = (($worldSettings->getPlotSize() + $worldSettings->getRoadSize()) * 3 + $worldSettings->getRoadSize()) / 2;
+        $serverMiddleX = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
+        $serverMiddleZ = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
+        $distanceToBorder--;
+        if ($toPosition->x > $serverMiddleX + $distanceToBorder || $toPosition->x < $serverMiddleX - $distanceToBorder || $toPosition->z > $serverMiddleZ + $distanceToBorder || $toPosition->z < $serverMiddleZ - $distanceToBorder) {
+            $event->getPlayer()->sendMessage("stop pls");
+            $event->cancel();
+            return;
+        }
+
         Await::f2c(
             static function () use ($event) : \Generator {
-                $toPosition = $event->getTo();
-                $worldSettings = yield from DataProvider::getInstance()->awaitWorld($toPosition->getWorld()->getFolderName());
-                if (!$worldSettings instanceof WorldSettings) {
-                    return;
-                }
-
                 /** @var Plot|null $plotTo */
-                $plotTo = yield from Plot::awaitFromPosition($toPosition);
+                $plotTo = yield from Plot::awaitFromPosition($event->getTo());
                 /** @var Plot|null $plotFrom */
                 $plotFrom = yield from Plot::awaitFromPosition($event->getFrom());
 
