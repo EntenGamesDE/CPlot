@@ -25,20 +25,30 @@ class PlayerMoveListener implements Listener {
         if ($event->isCancelled()) {
             return;
         }
-        $toPosition = $event->getTo();
-        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($toPosition->getWorld()->getFolderName());
+        $to = $event->getTo();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($to->getWorld()->getFolderName());
         if (!($worldSettings instanceof WorldSettings)) {
             return;
         }
 
-        $alignPlotPosition = (new BasePlot($toPosition->world->getFolderName(), $worldSettings, 0, 0))->getVector3();
+        $alignPlot = new BasePlot($to->world->getFolderName(), $worldSettings, 0, 0);
+        $alignPlotPosition = $alignPlot->getVector3();
         $distanceToBorder = (($worldSettings->getPlotSize() + $worldSettings->getRoadSize()) * 3 + $worldSettings->getRoadSize()) / 2;
         $serverMiddleX = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
         $serverMiddleZ = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
         $distanceToBorder--;
-        if ($toPosition->x > $serverMiddleX + $distanceToBorder || $toPosition->x < $serverMiddleX - $distanceToBorder || $toPosition->z > $serverMiddleZ + $distanceToBorder || $toPosition->z < $serverMiddleZ - $distanceToBorder) {
-            $event->getPlayer()->sendMessage("stop pls");
-            $event->cancel();
+        $borderNorth = $serverMiddleZ - $distanceToBorder;
+        $borderSouth = $serverMiddleZ + $distanceToBorder;
+        $borderWest = $serverMiddleX - $distanceToBorder;
+        $borderEast = $serverMiddleX + $distanceToBorder;
+        if ($to->x >= $borderEast || $to->x <= $borderWest || $to->z >= $borderSouth || $to->z <= $borderNorth) {
+            $from = $event->getFrom();
+            if ($from->x < $borderEast && $from->x > $borderWest && $from->z < $borderSouth && $from->z > $borderNorth) {
+                $oppositeMoveDirection = $from->subtractVector($to);
+                $event->getPlayer()->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
+            } else if ($from->x >= ++$borderEast || $from->x <= --$borderWest || $from->z >= ++$borderSouth || $from->z <= --$borderNorth) {
+                $alignPlot->teleportTo($event->getPlayer());
+            }
             return;
         }
 
