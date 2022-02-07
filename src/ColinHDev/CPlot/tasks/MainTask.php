@@ -15,7 +15,7 @@ use pocketmine\Server;
 use pocketmine\world\Position;
 use pocketmine\world\WorldManager;
 
-class EntityMovementTask extends Task {
+class MainTask extends Task {
 
     private WorldManager $worldManager;
     /** @var Position[] */

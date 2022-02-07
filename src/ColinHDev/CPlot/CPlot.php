@@ -22,7 +22,7 @@ use ColinHDev\CPlot\listener\PlayerMoveListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\EconomyManager;
-use ColinHDev\CPlot\tasks\EntityMovementTask;
+use ColinHDev\CPlot\tasks\MainTask;
 use ColinHDev\CPlot\worlds\generator\PlotGenerator;
 use ColinHDev\CPlot\worlds\generator\SchematicGenerator;
 use pocketmine\plugin\PluginBase;
@@ -48,7 +48,7 @@ class CPlot extends PluginBase {
     }
 
     public function onEnable() : void {
-        $this->getScheduler()->scheduleRepeatingTask(new EntityMovementTask(), 1);
+        $this->getScheduler()->scheduleRepeatingTask(new MainTask(), 1);
 
         $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener(), $this);
         $this->getServer()->getPluginManager()->registerEvents(new BlockBurningListener(), $this);
