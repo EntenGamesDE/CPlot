@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace ColinHDev\CPlot;
 
 use pocketmine\lang\Language;
-use pocketmine\lang\Translatable;
 use pocketmine\utils\Config;
 use pocketmine\utils\SingletonTrait;
 
@@ -18,13 +17,26 @@ class ResourceManager {
     private Config $wallsConfig;
 
     public function __construct() {
-        if (!is_dir(CPlot::getInstance()->getDataFolder())) mkdir(CPlot::getInstance()->getDataFolder());
-        if (!is_dir(CPlot::getInstance()->getDataFolder() . "schematics")) mkdir(CPlot::getInstance()->getDataFolder() . "schematics");
+        if (!is_dir(CPlot::getInstance()->getDataFolder() . "language")) {
+            mkdir(CPlot::getInstance()->getDataFolder() . "language");
+        }
+        if (!is_dir(CPlot::getInstance()->getDataFolder() . "schematics")) {
+            mkdir(CPlot::getInstance()->getDataFolder() . "schematics");
+        }
 
         CPlot::getInstance()->saveResource("borders.yml");
         CPlot::getInstance()->saveResource("config.yml");
-        CPlot::getInstance()->saveResource("language.ini");
         CPlot::getInstance()->saveResource("walls.yml");
+
+        foreach (CPlot::getInstance()->getResources() as $path => $fileInfo) {
+            if (strtolower($fileInfo->getExtension()) !== "ini") {
+                continue;
+            }
+            $subdirectory = str_replace(DIRECTORY_SEPARATOR . $fileInfo->getFilename(), "", $path);
+            if (strtolower($subdirectory) === "language") {
+                CPlot::getInstance()->saveResource($path);
+            }
+        }
 
         $this->bordersConfig = new Config(CPlot::getInstance()->getDataFolder() . "borders.yml", Config::YAML);
         $this->config = new Config(CPlot::getInstance()->getDataFolder() . "config.yml", Config::YAML);
