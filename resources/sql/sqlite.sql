@@ -38,9 +38,6 @@ CREATE TABLE IF NOT EXISTS worlds (
     roadSize            BIGINT          NOT NULL,
     plotSize            BIGINT          NOT NULL,
     groundSize          BIGINT          NOT NULL,
-    worldSize           BIGINT          NOT NULL,
-    alignPlotX          BIGINT          NOT NULL,
-    alignPlotZ          BIGINT          NOT NULL,
     roadBlock           TEXT            NOT NULL,
     borderBlock         TEXT            NOT NULL,
     borderBlockOnClaim  TEXT            NOT NULL,
@@ -246,9 +243,6 @@ VALUES (:playerUUID, :ID, :value);
 -- #      :roadSize int
 -- #      :plotSize int
 -- #      :groundSize int
--- #      :worldSize int
--- #      :alignPlotX int
--- #      :alignPlotZ int
 -- #      :roadBlock string
 -- #      :borderBlock string
 -- #      :borderBlockOnClaim string
@@ -259,13 +253,11 @@ INSERT OR REPLACE INTO worlds (
     worldName, worldType,
     roadSchematic, mergeRoadSchematic, plotSchematic,
     roadSize, plotSize, groundSize,
-    worldSize, alignPlotX, alignPlotZ,
     roadBlock, borderBlock, borderBlockOnClaim, plotFloorBlock, plotFillBlock, plotBottomBlock
 ) VALUES (
     :worldName, :worldType,
     :roadSchematic, :mergeRoadSchematic, :plotSchematic,
     :roadSize, :plotSize, :groundSize,
-    :worldSize, :alignPlotX, :alignPlotZ,
     :roadBlock, :borderBlock, :borderBlockOnClaim, :plotFloorBlock, :plotFillBlock, :plotBottomBlock
 );
 -- #    }

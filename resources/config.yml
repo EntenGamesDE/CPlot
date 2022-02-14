@@ -35,16 +35,6 @@ worldSettings:
     # minimum value: 5
     groundSize: 64
 
-    # The size of the worlds in plots. A border in each direction will prevent players from going to plots farther from this size.
-    # Default: 15
-    worldSize: 15
-    # The x coordinate of the plot, the world border is aligned on. This is NOT the plot in the middle of the border, but the most north-western one.
-    # Default: 0
-    alignPlotX: 0
-    # The z coordinate of the plot, the world border is aligned on. This is NOT the plot in the middle of the border, but the most north-western one.
-    # Default: 0
-    alignPlotZ: 0
-
     # the block that makes up the street
     # default value: "Oak Planks"
     roadBlock: "Oak Planks"
