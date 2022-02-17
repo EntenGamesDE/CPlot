@@ -41,9 +41,6 @@ worldSettings:
     # the block that makes up the border of the plot
     # default value: "Smooth Stone Slab"
     borderBlock: "Smooth Stone Slab"
-    # the block that makes up the border of the plot when it is claimed
-    # default value: "Cobblestone Slab"
-    borderBlockOnClaim: "Cobblestone Slab"
 
     # the block that makes up the floor of the plot
     # default value: "Grass"
@@ -221,6 +218,10 @@ database:
     # Recommended: 1 for sqlite, 2 for MySQL. You may want to further increase this value if your MySQL connection is very slow.
     worker-limit: 1
 
+# Decide how players should be identified within the database. Either by their UUID, their XUID or their name.
+# Possible values: uuid, xuid, name
+player.identifier.type: "uuid"
+
 # Change the settings for CPlot's economy plugin integration.
 economy:
     # Define the economy plugin, that will be used.
@@ -235,3 +236,15 @@ economy:
     mergePrice: 0.0
     # Define the price it costs to reset a plot.
     resetPrice: 0.0
+
+# Change the settings for CPlot's language integration.
+language:
+    # Set the default language that will be used when translating a message for a player, whose language is not supported.
+    fallback: "de_de"
+
+    # Set aliases for specific languages that may be used by players. (This can be useful if a certain language is
+    # nearly the same as another one. This way you can just set one language as the alias of the other one, so you will
+    # not have to copy and maintain two files with the same content. E.g.: "en_us": "en_gb")
+    aliases:
+        de_at: "de_de"
+        de_ch: "de_de"

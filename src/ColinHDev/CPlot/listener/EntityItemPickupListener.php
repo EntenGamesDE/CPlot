@@ -9,7 +9,7 @@ use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
-use ColinHDev\CPlot\ResourceManager;
+use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\Listener;
@@ -31,7 +31,7 @@ class EntityItemPickupListener implements Listener {
         $position = $entity->getPosition();
         $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($position->getWorld()->getFolderName());
         if ($worldSettings === null) {
-            $entity->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("player.interact.worldNotLoaded"));
+            LanguageManager::getInstance()->getProvider()->sendMessage($entity, ["prefix", "player.interact.worldNotLoaded"]);
             $event->cancel();
             return;
         }
@@ -41,7 +41,7 @@ class EntityItemPickupListener implements Listener {
 
         $plot = Plot::loadFromPositionIntoCache($position);
         if ($plot instanceof BasePlot && !$plot instanceof Plot) {
-            $entity->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("player.interact.plotNotLoaded"));
+            LanguageManager::getInstance()->getProvider()->sendMessage($entity, ["prefix", "player.interact.plotNotLoaded"]);
             $event->cancel();
             return;
         }
@@ -50,16 +50,15 @@ class EntityItemPickupListener implements Listener {
                 return;
             }
 
-            $playerUUID = $entity->getUniqueId()->getBytes();
-            if ($plot->isPlotOwner($playerUUID)) {
+            if ($plot->isPlotOwner($entity)) {
                 return;
             }
-            if ($plot->isPlotTrusted($playerUUID)) {
+            if ($plot->isPlotTrusted($entity)) {
                 return;
             }
-            if ($plot->isPlotHelper($playerUUID)) {
+            if ($plot->isPlotHelper($entity)) {
                 foreach ($plot->getPlotOwners() as $plotOwner) {
-                    $owner = $entity->getServer()->getPlayerByUUID(Uuid::fromBytes($plotOwner->getPlayerUUID()));
+                    $owner = $plotOwner->getPlayerData()->getPlayer();
                     if ($owner !== null) {
                         return;
                     }

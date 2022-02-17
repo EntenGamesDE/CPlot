@@ -8,6 +8,7 @@ use ColinHDev\CPlot\commands\Subcommand;
 use ColinHDev\CPlot\player\PlayerData;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
+use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -19,47 +20,50 @@ class HelpersSubcommand extends Subcommand {
 
     public function execute(CommandSender $sender, array $args) : \Generator {
         if (!$sender instanceof Player) {
-            $sender->sendMessage($this->getPrefix() . $this->translateString("helpers.senderNotOnline"));
+            yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.senderNotOnline"]);
             return null;
         }
 
         if (!((yield DataProvider::getInstance()->awaitWorld($sender->getWorld()->getFolderName())) instanceof WorldSettings)) {
-            $sender->sendMessage($this->getPrefix() . $this->translateString("helpers.noPlotWorld"));
+            yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.noPlotWorld"]);
             return null;
         }
         $plot = yield Plot::awaitFromPosition($sender->getPosition());
         if (!($plot instanceof Plot)) {
-            $sender->sendMessage($this->getPrefix() . $this->translateString("helpers.noPlot"));
+            yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.noPlot"]);
             return null;
         }
 
         $helperData = [];
         foreach ($plot->getPlotHelpers() as $plotPlayer) {
-            $playerData = yield DataProvider::getInstance()->awaitPlayerDataByUUID($plotPlayer->getPlayerUUID());
-            if ($playerData instanceof PlayerData) {
-                $playerName = $playerData->getPlayerName();
-            } else {
-                $playerName = "ERROR";
-            }
-            [$d, $m, $y, $h, $min, $s] = explode(".", date("d.m.Y.H.i.s", (int) (round($plotPlayer->getAddTime() / 1000))));
-            $helperData[] = $this->translateString("helpers.success.list", [
-                $playerName,
-                $this->translateString("helpers.success.list.addTime.format", [$d, $m, $y, $h, $min, $s])
-            ]);
+            $plotPlayerData = $plotPlayer->getPlayerData();
+            /** @phpstan-var string $addTime */
+            $addTime = yield LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                $sender,
+                ["helpers.success.list.addTime.format" => explode(".", date("d.m.Y.H.i.s", $plotPlayer->getAddTime()))]
+            );
+            $helperData[] = yield LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                $sender,
+                ["helpers.success.list" => [
+                    $plotPlayerData->getPlayerName() ?? "Error: " . ($plotPlayerData->getPlayerXUID() ?? $plotPlayerData->getPlayerUUID() ?? $plotPlayerData->getPlayerID()),
+                    $addTime
+                ]]
+            );
         }
         if (count($helperData) === 0) {
-            $sender->sendMessage($this->getPrefix() . $this->translateString("helpers.noHelpers"));
+            yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.noHelpers"]);
             return null;
         }
 
-        $sender->sendMessage(
-            $this->getPrefix() .
-            $this->translateString(
-                "helpers.success",
-                [
-                    implode($this->translateString("helpers.success.list.separator"), $helperData)
-                ]
-            )
+        /** @phpstan-var string $separator */
+        $separator = yield LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender($sender, "helpers.success.list.separator");
+        $list = implode($separator, $helperData);
+        yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage(
+            $sender,
+            [
+                "prefix",
+                "helpers.success" => $list
+            ]
         );
         return null;
     }

@@ -9,7 +9,7 @@ use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
-use ColinHDev\CPlot\ResourceManager;
+use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\block\Block;
 use pocketmine\event\block\BlockBreakEvent;
@@ -26,7 +26,7 @@ class BlockBreakListener implements Listener {
         $position = $event->getBlock()->getPosition();
         $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($position->getWorld()->getFolderName());
         if ($worldSettings === null) {
-            $event->getPlayer()->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("player.break.worldNotLoaded"));
+            LanguageManager::getInstance()->getProvider()->sendMessage($event->getPlayer(), ["prefix", "player.break.worldNotLoaded"]);
             $event->cancel();
             return;
         }
@@ -36,7 +36,7 @@ class BlockBreakListener implements Listener {
 
         $plot = Plot::loadFromPositionIntoCache($position);
         if ($plot instanceof BasePlot && !$plot instanceof Plot) {
-            $event->getPlayer()->sendMessage(ResourceManager::getInstance()->getPrefix() . ResourceManager::getInstance()->translateString("player.break.plotNotLoaded"));
+            LanguageManager::getInstance()->getProvider()->sendMessage($event->getPlayer(), ["prefix", "player.break.plotNotLoaded"]);
             $event->cancel();
             return;
         }
@@ -46,16 +46,15 @@ class BlockBreakListener implements Listener {
                 return;
             }
 
-            $playerUUID = $player->getUniqueId()->getBytes();
-            if ($plot->isPlotOwner($playerUUID)) {
+            if ($plot->isPlotOwner($player)) {
                 return;
             }
-            if ($plot->isPlotTrusted($playerUUID)) {
+            if ($plot->isPlotTrusted($player)) {
                 return;
             }
-            if ($plot->isPlotHelper($playerUUID)) {
+            if ($plot->isPlotHelper($player)) {
                 foreach ($plot->getPlotOwners() as $plotOwner) {
-                    $owner = $player->getServer()->getPlayerByUUID(Uuid::fromBytes($plotOwner->getPlayerUUID()));
+                    $owner = $plotOwner->getPlayerData()->getPlayer();
                     if ($owner !== null) {
                         return;
                     }
