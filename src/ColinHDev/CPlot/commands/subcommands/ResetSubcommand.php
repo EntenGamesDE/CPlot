@@ -48,7 +48,7 @@ class ResetSubcommand extends Subcommand {
                 yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "reset.noPlotOwner"]);
                 return null;
             }
-            if (!$plot->isPlotOwner($sender->getUniqueId()->getBytes())) {
+            if (!$plot->isPlotOwner($sender)) {
                 yield LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "reset.notPlotOwner"]);
                 return null;
             }
@@ -97,7 +97,7 @@ class ResetSubcommand extends Subcommand {
                 LanguageManager::getInstance()->getProvider()->sendMessage($sender, ["prefix", "reset.finish" => $elapsedTimeString]);
             }
         );
-        yield DataProvider::getInstance()->deletePlot($plot);
+        yield DataProvider::getInstance()->awaitPlotDeletion($plot);
         Server::getInstance()->getAsyncPool()->submitTask($task);
         return null;
     }
