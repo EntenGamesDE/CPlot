@@ -18,6 +18,7 @@ use ColinHDev\CPlot\plots\PlotRate;
 use ColinHDev\CPlot\provider\cache\Cache;
 use ColinHDev\CPlot\provider\cache\CacheIDs;
 use ColinHDev\CPlot\ResourceManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\utils\ParseUtils;
 use ColinHDev\CPlot\worlds\NonWorldSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
@@ -40,6 +41,7 @@ final class DataProvider {
     use SingletonTrait;
 
     private const INIT_FOREIGN_KEYS = "cplot.init.foreignKeys";
+    private const INIT_SERVERS_TABLE = "cplot.init.serversTable";
     private const INIT_PLAYERDATA_TABLE = "cplot.init.playerDataTable";
     private const INIT_ASTERISK_PLAYER = "cplot.init.asteriskPlayer";
     private const INIT_PLAYERSETTINGS_TABLE = "cplot.init.playerSettingsTable";
@@ -50,6 +52,7 @@ final class DataProvider {
     private const INIT_PLOTFLAGS_TABLE = "cplot.init.plotFlagsTable";
     private const INIT_PLOTRATES_TABLE = "cplot.init.plotRatesTable";
 
+    private const GET_SERVER_BY_ID = "cplot.get.serverByID";
     private const GET_PLAYERDATA_BY_IDENTIFIER = "cplot.get.playerDataByIdentifier";
     private const GET_PLAYERDATA_BY_UUID = "cplot.get.playerDataByUUID";
     private const GET_PLAYERDATA_BY_XUID = "cplot.get.playerDataByXUID";
@@ -133,6 +136,19 @@ final class DataProvider {
      */
     private function initializeDatabase() : \Generator {
         yield $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS);
+        yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
+        $serverID = (int) ResourceManager::getInstance()->getConfig()->get("serverID", 1);
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_ID, ["ID" => $serverID]);
+        /** @phpstan-var array{X: int, Z: int}|null $serverData */
+        $serverData = $rows[array_key_first($rows)] ?? null;
+        if ($serverData === null) {
+            $serverX = 0;
+            $serverZ = 0;
+        } else {
+            $serverX = $serverData["X"];
+            $serverZ = $serverData["Z"];
+        }
+        ServerSettings::setInstance(new ServerSettings($serverID, $serverX, $serverZ));
         yield $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE);
         yield $this->database->asyncGeneric(self::INIT_ASTERISK_PLAYER, ["lastJoin" => date("d.m.Y H:i:s")]);
         yield $this->database->asyncGeneric(self::INIT_PLAYERSETTINGS_TABLE);

@@ -6,6 +6,14 @@
 -- #    { foreignKeys
 SET FOREIGN_KEY_CHECKS = 1;
 -- #    }
+-- #    { serversTable
+CREATE TABLE IF NOT EXISTS servers (
+    ID    BIGINT  NOT NULL    AUTO_INCREMENT,
+    X     BIGINT  NOT NULL,
+    Z     BIGINT  NOT NULL,
+    PRIMARY KEY (ID)
+);
+-- #    }
 -- #    { playerDataTable
 CREATE TABLE IF NOT EXISTS playerData (
     playerID    BIGINT          NOT NULL    AUTO_INCREMENT,
@@ -107,6 +115,12 @@ CREATE TABLE IF NOT EXISTS plotRates (
 -- #  }
 
 -- #  { get
+-- #    { serverByID
+-- #      :ID int
+SELECT X, Z
+FROM servers
+WHERE ID = :ID;
+-- #    }
 -- #    { playerDataByIdentifier
 -- #      :playerID int
 SELECT playerUUID, playerXUID, playerName, lastJoin
