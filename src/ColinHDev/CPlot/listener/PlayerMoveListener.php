@@ -13,9 +13,11 @@ use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use SOFe\AwaitGenerator\Await;
 
@@ -26,28 +28,27 @@ class PlayerMoveListener implements Listener {
             return;
         }
         $to = $event->getTo();
-        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($to->getWorld()->getFolderName());
+        $worldName = $to->getWorld()->getFolderName();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
         if (!($worldSettings instanceof WorldSettings)) {
             return;
         }
 
-        $alignPlot = new BasePlot($to->world->getFolderName(), $worldSettings, 0, 0);
-        $alignPlotPosition = $alignPlot->getVector3();
-        $distanceToBorder = (($worldSettings->getPlotSize() + $worldSettings->getRoadSize()) * 3 + $worldSettings->getRoadSize()) / 2;
-        $serverMiddleX = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
-        $serverMiddleZ = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorder;
-        $distanceToBorder--;
-        $borderNorth = $serverMiddleZ - $distanceToBorder;
-        $borderSouth = $serverMiddleZ + $distanceToBorder;
-        $borderWest = $serverMiddleX - $distanceToBorder;
-        $borderEast = $serverMiddleX + $distanceToBorder;
-        if ($to->x >= $borderEast || $to->x <= $borderWest || $to->z >= $borderSouth || $to->z <= $borderNorth) {
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        if (!$worldBorder->isVectorInXZ($to)) {
             $from = $event->getFrom();
-            if ($from->x < $borderEast && $from->x > $borderWest && $from->z < $borderSouth && $from->z > $borderNorth) {
+            if ($worldBorder->isVectorInXZ($from)) {
                 $oppositeMoveDirection = $from->subtractVector($to);
                 $event->getPlayer()->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
-            } else if ($from->x >= ++$borderEast || $from->x <= --$borderWest || $from->z >= ++$borderSouth || $from->z <= --$borderNorth) {
-                $alignPlot->teleportTo($event->getPlayer());
+            } else {
+                $worldBorder->expand(1.0, 0.0, 1.0);
+                if (!$worldBorder->isVectorInXZ($from)) {
+                    $event->getPlayer()->teleport(new Vector3(
+                        min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
+                        $to->y,
+                        min(max($to->z, $worldBorder->minZ), $worldBorder->maxZ)
+                    ));
+                }
             }
             return;
         }
