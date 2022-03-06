@@ -8,7 +8,6 @@ use ColinHDev\CPlot\attributes\BooleanAttribute;
 use ColinHDev\CPlot\attributes\BooleanListAttribute;
 use ColinHDev\CPlot\attributes\StringAttribute;
 use ColinHDev\CPlot\player\settings\SettingIDs;
-use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
