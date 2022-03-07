@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace ColinHDev\CPlot\tasks;
 
+use ColinHDev\CPlot\math\Sphere;
+use ColinHDev\CPlot\particles\DragonBreathTrailParticle;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\entity\Human;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 use pocketmine\world\Position;
@@ -20,6 +24,7 @@ class MainTask extends Task {
     private WorldManager $worldManager;
     /** @var Position[] */
     private array $lastPositions = [];
+    private ServerSettings $serverSettings;
 
     public function __construct() {
         $this->worldManager = Server::getInstance()->getWorldManager();
@@ -29,11 +34,41 @@ class MainTask extends Task {
         if (!DataProvider::getInstance()->isInitialized()) {
             return;
         }
+        if (!isset($this->serverSettings)) {
+            $this->serverSettings = ServerSettings::getInstance();
+        }
         foreach ($this->worldManager->getWorlds() as $world) {
             $worldName = $world->getFolderName();
             $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
             if (!$worldSettings instanceof WorldSettings) {
                 continue;
+            }
+
+            if (Server::getInstance()->getTick() % 5 === 0) {
+                $worldBorder = $this->serverSettings->getWorldBorder($worldName, $worldSettings);
+                foreach ($world->getPlayers() as $player) {
+                    $location = $player->getLocation();
+                    $sphere = new Sphere($location->x, $location->y, $location->z, 7.5, 7.5, 7.5);
+                    $particle = new DragonBreathTrailParticle();
+                    foreach (
+                        [
+                            $sphere->getXIntersection($worldBorder->minX),
+                            $sphere->getXIntersection($worldBorder->maxX),
+                            $sphere->getZIntersection($worldBorder->minZ),
+                            $sphere->getZIntersection($worldBorder->maxZ)
+                        ] as $particleSpawn) {
+                        if ($particleSpawn instanceof Vector3) {
+                            $world->addParticle($particleSpawn, $particle);
+                        } else if ($particleSpawn instanceof Sphere) {
+                            foreach ($particleSpawn->getPoints() as $point) {
+                                $world->addParticle(
+                                    $point,
+                                    $particle
+                                );
+                            }
+                        }
+                    }
+                }
             }
 
             foreach ($world->updateEntities as $entity) {
