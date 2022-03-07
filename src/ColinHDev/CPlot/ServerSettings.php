@@ -53,10 +53,10 @@ class ServerSettings {
         $distanceToBorderFromMiddle--;
         $aabb = new AxisAlignedBB(
             $serverMiddleX - $distanceToBorderFromMiddle,
-            World::Y_MIN,
+            PHP_INT_MIN,
             $serverMiddleZ - $distanceToBorderFromMiddle,
             $serverMiddleX + $distanceToBorderFromMiddle,
-            World::Y_MAX,
+            PHP_INT_MAX,
             $serverMiddleZ + $distanceToBorderFromMiddle
         );
         $this->worldAABBs[$worldName] = $aabb;
