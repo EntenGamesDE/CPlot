@@ -13,15 +13,15 @@ class ServerSettings {
 
     private int $ID;
     private int $worldSize = 13;
-    private int $X;
-    private int $Z;
+    private int $x;
+    private int $z;
     /** @phpstan-var array<string, AxisAlignedBB> */
     private array $worldAABBs = [];
 
-    public function __construct(int $ID, int $X, int $Z) {
+    public function __construct(int $ID, int $x, int $z) {
         $this->ID = $ID;
-        $this->X = $X;
-        $this->Z = $Z;
+        $this->x = $x;
+        $this->z = $z;
     }
 
     public function getID() : int {
@@ -33,18 +33,18 @@ class ServerSettings {
     }
 
     public function getX() : int {
-        return $this->X;
+        return $this->x;
     }
 
     public function getZ() : int {
-        return $this->Z;
+        return $this->z;
     }
 
     public function getWorldBorder(string $worldName, WorldSettings $worldSettings) : AxisAlignedBB {
         if (isset($this->worldAABBs[$worldName])) {
             return clone $this->worldAABBs[$worldName];
         }
-        $alignPlot = new BasePlot($worldName, $worldSettings, $this->X * $this->worldSize, $this->Z * $this->worldSize);
+        $alignPlot = new BasePlot($worldName, $worldSettings, $this->x * $this->worldSize, $this->z * $this->worldSize);
         $alignPlotPosition = $alignPlot->getVector3();
         $borderLength = ($worldSettings->getPlotSize() + $worldSettings->getRoadSize()) * $this->worldSize + $worldSettings->getRoadSize();
         $distanceToBorderFromMiddle = $borderLength / 2;

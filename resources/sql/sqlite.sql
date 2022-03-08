@@ -9,8 +9,8 @@ PRAGMA foreign_keys = ON;
 -- #    { serversTable
 CREATE TABLE IF NOT EXISTS servers (
     ID    BIGINT  PRIMARY KEY,
-    X     BIGINT  NOT NULL,
-    Z     BIGINT  NOT NULL
+    x     BIGINT  NOT NULL,
+    z     BIGINT  NOT NULL
 );
 -- #    }
 -- #    { playerDataTable
@@ -115,7 +115,7 @@ CREATE TABLE IF NOT EXISTS plotRates (
 -- #  { get
 -- #    { serverByID
 -- #      :ID int
-SELECT X, Z
+SELECT x, z
 FROM servers
 WHERE ID = :ID;
 -- #    }

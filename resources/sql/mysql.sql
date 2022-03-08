@@ -9,8 +9,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- #    { serversTable
 CREATE TABLE IF NOT EXISTS servers (
     ID    BIGINT  NOT NULL    AUTO_INCREMENT,
-    X     BIGINT  NOT NULL,
-    Z     BIGINT  NOT NULL,
+    x     BIGINT  NOT NULL,
+    z     BIGINT  NOT NULL,
     PRIMARY KEY (ID)
 );
 -- #    }
@@ -117,7 +117,7 @@ CREATE TABLE IF NOT EXISTS plotRates (
 -- #  { get
 -- #    { serverByID
 -- #      :ID int
-SELECT X, Z
+SELECT x, z
 FROM servers
 WHERE ID = :ID;
 -- #    }
