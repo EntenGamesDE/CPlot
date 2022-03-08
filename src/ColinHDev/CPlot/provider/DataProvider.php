@@ -53,6 +53,7 @@ final class DataProvider {
     private const INIT_PLOTRATES_TABLE = "cplot.init.plotRatesTable";
 
     private const GET_SERVER_BY_ID = "cplot.get.serverByID";
+    private const GET_SERVER_BY_COORDINATES = "cplot.get.serverByCoordinates";
     private const GET_PLAYERDATA_BY_IDENTIFIER = "cplot.get.playerDataByIdentifier";
     private const GET_PLAYERDATA_BY_UUID = "cplot.get.playerDataByUUID";
     private const GET_PLAYERDATA_BY_XUID = "cplot.get.playerDataByXUID";
@@ -170,6 +171,16 @@ final class DataProvider {
      */
     public function getPlayerIdentifierType() : string {
         return $this->playerIdentifierType;
+    }
+
+    /**
+     * @phpstan-return \Generator<int, mixed, mixed, int|null>
+     */
+    public function awaitServerIDByCoordinates(int $serverX, int $serverZ) : \Generator {
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_ID, ["x" => $serverX, "z" => $serverZ]);
+        /** @phpstan-var int|null $serverID */
+        $serverID = $rows[array_key_first($rows)]["ID"] ?? null;
+        return $serverID;
     }
 
     /**

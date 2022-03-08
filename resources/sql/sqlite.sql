@@ -119,6 +119,13 @@ SELECT x, z
 FROM servers
 WHERE ID = :ID;
 -- #    }
+-- #    { serverByCoordinates
+-- #      :x int
+-- #      :z int
+SELECT ID
+FROM servers
+WHERE x = :x AND z = :z;
+-- #    }
 -- #    { playerDataByIdentifier
 -- #      :playerID int
 SELECT playerUUID, playerXUID, playerName, lastJoin
