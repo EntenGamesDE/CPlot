@@ -12,21 +12,21 @@ use pocketmine\utils\SingletonTrait;
 class ServerSettings {
     use SingletonTrait;
 
-    private int $ID;
+    private string $name;
     private int $worldSize = 13;
     private int $x;
     private int $z;
     /** @phpstan-var array<string, AxisAlignedBB> */
     private array $worldAABBs = [];
 
-    public function __construct(int $ID, int $x, int $z) {
-        $this->ID = $ID;
+    public function __construct(string $name, int $x, int $z) {
+        $this->name = $name;
         $this->x = $x;
         $this->z = $z;
     }
 
-    public function getID() : int {
-        return $this->ID;
+    public function getName() : string {
+        return $this->name;
     }
 
     public function getWorldSize() : int {

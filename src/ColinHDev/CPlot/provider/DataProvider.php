@@ -52,7 +52,7 @@ final class DataProvider {
     private const INIT_PLOTFLAGS_TABLE = "cplot.init.plotFlagsTable";
     private const INIT_PLOTRATES_TABLE = "cplot.init.plotRatesTable";
 
-    private const GET_SERVER_BY_ID = "cplot.get.serverByID";
+    private const GET_SERVER_BY_NAME = "cplot.get.serverByName";
     private const GET_SERVER_BY_COORDINATES = "cplot.get.serverByCoordinates";
     private const GET_PLAYERDATA_BY_IDENTIFIER = "cplot.get.playerDataByIdentifier";
     private const GET_PLAYERDATA_BY_UUID = "cplot.get.playerDataByUUID";
@@ -138,8 +138,8 @@ final class DataProvider {
     private function initializeDatabase() : \Generator {
         yield $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS);
         yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
-        $serverID = (int) ResourceManager::getInstance()->getConfig()->get("serverID", 1);
-        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_ID, ["ID" => $serverID]);
+        $serverName = ResourceManager::getInstance()->getConfig()->get("serverName", "CityBuild-1");
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
         /** @phpstan-var array{X: int, Z: int}|null $serverData */
         $serverData = $rows[array_key_first($rows)] ?? null;
         if ($serverData === null) {
@@ -149,7 +149,7 @@ final class DataProvider {
             $serverX = $serverData["X"];
             $serverZ = $serverData["Z"];
         }
-        ServerSettings::setInstance(new ServerSettings($serverID, $serverX, $serverZ));
+        ServerSettings::setInstance(new ServerSettings($serverName, $serverX, $serverZ));
         yield $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE);
         yield $this->database->asyncGeneric(self::INIT_ASTERISK_PLAYER, ["lastJoin" => date("d.m.Y H:i:s")]);
         yield $this->database->asyncGeneric(self::INIT_PLAYERSETTINGS_TABLE);
@@ -176,11 +176,11 @@ final class DataProvider {
     /**
      * @phpstan-return \Generator<int, mixed, mixed, int|null>
      */
-    public function awaitServerIDByCoordinates(int $serverX, int $serverZ) : \Generator {
-        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_ID, ["x" => $serverX, "z" => $serverZ]);
-        /** @phpstan-var int|null $serverID */
-        $serverID = $rows[array_key_first($rows)]["ID"] ?? null;
-        return $serverID;
+    public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["x" => $serverX, "z" => $serverZ]);
+        /** @phpstan-var int|null $serverName */
+        $serverName = $rows[array_key_first($rows)]["name"] ?? null;
+        return $serverName;
     }
 
     /**
