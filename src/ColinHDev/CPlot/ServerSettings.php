@@ -6,7 +6,6 @@ use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\world\World;
 
 class ServerSettings {
     use SingletonTrait;
