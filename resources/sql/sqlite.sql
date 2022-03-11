@@ -123,9 +123,9 @@ WHERE name = :name;
 -- #    { serverByCoordinates
 -- #      :x int
 -- #      :z int
-SELECT name
-FROM servers
-WHERE x = :x AND z = :z;
+SELECT name FROM servers WHERE x = :x AND z = :z
+UNION
+SELECT COUNT(name) as name FROM servers;
 -- #    }
 -- #    { playerDataByIdentifier
 -- #      :playerID int
