@@ -21,11 +21,13 @@ use ColinHDev\CPlot\listener\PlayerInteractListener;
 use ColinHDev\CPlot\listener\PlayerLoginListener;
 use ColinHDev\CPlot\listener\PlayerMoveListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
+use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\EconomyManager;
 use ColinHDev\CPlot\tasks\MainTask;
 use ColinHDev\CPlot\worlds\generator\PlotGenerator;
 use ColinHDev\CPlot\worlds\generator\SchematicGenerator;
+use matze\cloudbridge\network\packets\DataPacketManager;
 use pocketmine\plugin\PluginBase;
 use pocketmine\world\generator\GeneratorManager;
 
@@ -49,6 +51,8 @@ class CPlot extends PluginBase {
     }
 
     public function onEnable() : void {
+        DataPacketManager::getInstance()->registerPacket(new CPlotTeleportPacket());
+
         $this->getScheduler()->scheduleRepeatingTask(new MainTask(), 1);
 
         $this->getServer()->getPluginManager()->registerEvents(new BlockBreakListener(), $this);
