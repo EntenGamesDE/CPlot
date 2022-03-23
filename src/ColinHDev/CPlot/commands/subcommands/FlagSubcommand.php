@@ -301,13 +301,15 @@ class FlagSubcommand extends Subcommand {
                     }
 
                     $values = $flag->getValue();
+                    assert(is_array($values));
                     $removedValues = [];
-                    foreach ($parsedValues as $parsedValue) {
-                        $parsedValueString = $flag->toString([$parsedValue]);
-                        foreach ($flag->getValue() as $key => $value) {
-                            if ($flag->toString([$value]) === $parsedValueString) {
-                                $removedValues[] = $parsedValue;
+                    foreach ($values as $key => $value) {
+                        $valueString = $flag->toString([$value]);
+                        foreach ($parsedValues as $parsedValue) {
+                            if ($valueString === $flag->toString([$parsedValue])) {
+                                $removedValues[] = $value;
                                 unset($values[$key]);
+                                continue 2;
                             }
                         }
                     }
