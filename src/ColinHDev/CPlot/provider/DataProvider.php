@@ -180,7 +180,7 @@ final class DataProvider {
      */
     public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
         $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["x" => $serverX, "z" => $serverZ]);
-        /** @phpstan-var int|null $serverName */
+        /** @phpstan-var string|null $serverName */
         $serverName = $rows[array_key_first($rows)]["name"];
         if (count($rows) === 1) {
             $serverName = "CityBuild-" . (((int) $serverName) + 1);
