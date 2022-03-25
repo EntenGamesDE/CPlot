@@ -182,7 +182,7 @@ final class DataProvider {
         /** @phpstan-var int|null $serverName */
         $serverName = $rows[array_key_first($rows)]["name"];
         if (count($rows) === 1) {
-            $serverName = "CityBuild-" . $serverName;
+            $serverName = "CityBuild-" . (((int) $serverName) + 1);
         }
         return $serverName;
     }
