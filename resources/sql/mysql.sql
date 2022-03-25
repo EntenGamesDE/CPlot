@@ -253,6 +253,12 @@ WHERE worldName = :worldName AND x = :x AND z = :z;
 -- #  }
 
 -- #  { set
+-- #    { server
+-- #      :name int
+-- #      :x int
+-- #      :z int
+INSERT INTO servers (name, x, z) VALUES (:name, :x, :z);
+-- #    }
 -- #    { newPlayerData
 -- #      :playerUUID string
 -- #      :playerXUID string
