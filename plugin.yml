@@ -4,9 +4,6 @@ version: "0.0.0"
 
 api: 4.0.0
 
-depend:
-- DEVirion
-
 author: ColinHDev
 website: https://github.com/ColinHDev
 
