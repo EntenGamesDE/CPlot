@@ -71,6 +71,7 @@ final class DataProvider {
     private const GET_PLOTFLAGS = "cplot.get.plotFlags";
     private const GET_PLOTRATES = "cplot.get.plotRates";
 
+    private const SET_SERVER = "cplot.set.server";
     private const SET_NEW_PLAYERDATA = "cplot.set.newPlayerData";
     private const SET_PLAYERDATA = "cplot.set.playerData";
     private const SET_PLAYERSETTING = "cplot.set.playerSetting";
@@ -179,10 +180,11 @@ final class DataProvider {
      */
     public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
         $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["x" => $serverX, "z" => $serverZ]);
-        /** @phpstan-var int|null $serverName */
+        /** @phpstan-var string|null $serverName */
         $serverName = $rows[array_key_first($rows)]["name"];
         if (count($rows) === 1) {
-            $serverName = "CityBuild-" . $serverName;
+            $serverName = "CityBuild-" . (((int) $serverName) + 1);
+            yield $this->database->asyncInsert(self::SET_SERVER, ["name" => $serverName, "x" => $serverX, "z" => $serverZ]);
         }
         return $serverName;
     }
