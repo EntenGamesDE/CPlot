@@ -142,14 +142,14 @@ final class DataProvider {
         yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
         $serverName = ResourceManager::getInstance()->getConfig()->get("serverName", "CityBuild-1");
         $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
-        /** @phpstan-var array{X: int, Z: int}|null $serverData */
+        /** @phpstan-var array{x: int, z: int}|null $serverData */
         $serverData = $rows[array_key_first($rows)] ?? null;
         if ($serverData === null) {
             $serverX = 0;
             $serverZ = 0;
         } else {
-            $serverX = $serverData["X"];
-            $serverZ = $serverData["Z"];
+            $serverX = $serverData["x"];
+            $serverZ = $serverData["z"];
         }
         ServerSettings::setInstance(new ServerSettings($serverName, $serverX, $serverZ));
         yield $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE);
