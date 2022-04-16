@@ -253,7 +253,7 @@ WHERE worldName = :worldName AND x = :x AND z = :z;
 
 -- #  { set
 -- #    { server
--- #      :name int
+-- #      :name string
 -- #      :x int
 -- #      :z int
 INSERT INTO servers (name, x, z) VALUES (:name, :x, :z);

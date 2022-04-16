@@ -8,10 +8,10 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- #    }
 -- #    { serversTable
 CREATE TABLE IF NOT EXISTS servers (
-    name  VARCHAR(256)  NOT NULL    AUTO_INCREMENT,
+    name  VARCHAR(256)  NOT NULL,
     x     BIGINT        NOT NULL,
     z     BIGINT        NOT NULL,
-    PRIMARY KEY (ID)
+    PRIMARY KEY (name)
 );
 -- #    }
 -- #    { playerDataTable
@@ -254,7 +254,7 @@ WHERE worldName = :worldName AND x = :x AND z = :z;
 
 -- #  { set
 -- #    { server
--- #      :name int
+-- #      :name string
 -- #      :x int
 -- #      :z int
 INSERT INTO servers (name, x, z) VALUES (:name, :x, :z);
