@@ -31,9 +31,9 @@ VALUES (1, "*", "*", "*", :lastJoin);
 -- #    }
 -- #    { playerSettingsTable
 CREATE TABLE IF NOT EXISTS playerSettings (
-    playerID    BIGINT  NOT NULL,
-    ID          TEXT    NOT NULL,
-    value       TEXT    NOT NULL,
+    playerID    BIGINT          NOT NULL,
+    ID          VARCHAR(256)    NOT NULL,
+    value       TEXT            NOT NULL,
     PRIMARY KEY (playerID, ID),
     FOREIGN KEY (playerID) REFERENCES playerData (playerID) ON DELETE CASCADE
 );
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS plotAliases (
     worldName       VARCHAR(256)    NOT NULL,
     x               BIGINT          NOT NULL,
     z               BIGINT          NOT NULL,
-    alias           TEXT            NOT NULL,
+    alias           VARCHAR(256)    NOT NULL,
     PRIMARY KEY (worldName, x, z, alias),
     FOREIGN KEY (worldName) REFERENCES worlds (worldName) ON DELETE CASCADE
 );
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS plotFlags (
     worldName   VARCHAR(256)    NOT NULL,
     x           BIGINT          NOT NULL,
     z           BIGINT          NOT NULL,
-    ID          TEXT            NOT NULL,
+    ID          VARCHAR(256)    NOT NULL,
     value       TEXT            NOT NULL,
     PRIMARY KEY (worldName, x, z, ID)
 );
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS plotRates (
     z           BIGINT          NOT NULL,
     rate        TEXT            NOT NULL,
     playerID    BIGINT          NOT NULL,
-    rateTime    TEXT            NOT NULL,
+    rateTime    VARCHAR(256)    NOT NULL,
     comment     TEXT,
     PRIMARY KEY (worldName, x, z, playerID, rateTime),
     FOREIGN KEY (playerID) REFERENCES playerData (playerID) ON DELETE CASCADE
