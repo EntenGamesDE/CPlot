@@ -21,11 +21,13 @@ use ColinHDev\CPlot\listener\PlayerInteractListener;
 use ColinHDev\CPlot\listener\PlayerLoginListener;
 use ColinHDev\CPlot\listener\PlayerMoveListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
+use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\EconomyManager;
-use ColinHDev\CPlot\tasks\EntityMovementTask;
+use ColinHDev\CPlot\tasks\MainTask;
 use ColinHDev\CPlot\worlds\generator\PlotGenerator;
 use ColinHDev\CPlot\worlds\generator\SchematicGenerator;
+use matze\cloudbridge\network\packets\DataPacketManager;
 use pocketmine\plugin\PluginBase;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\generator\GeneratorManager;
@@ -46,7 +48,9 @@ class CPlot extends PluginBase {
         $generatorManager->addGenerator(PlotGenerator::class, PlotGenerator::GENERATOR_NAME, fn() => null, true);
         $generatorManager->addGenerator(SchematicGenerator::class, SchematicGenerator::GENERATOR_NAME, fn() => null, true);
 
-        $this->getScheduler()->scheduleRepeatingTask(new EntityMovementTask(), 1);
+        DataPacketManager::getInstance()->registerPacket(new CPlotTeleportPacket());
+
+        $this->getScheduler()->scheduleRepeatingTask(new MainTask(), 1);
 
         $server = $this->getServer();
         $pluginManager = $server->getPluginManager();

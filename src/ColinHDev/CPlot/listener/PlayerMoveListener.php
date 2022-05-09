@@ -12,9 +12,11 @@ use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use SOFe\AwaitGenerator\Await;
 
@@ -24,16 +26,36 @@ class PlayerMoveListener implements Listener {
         if ($event->isCancelled()) {
             return;
         }
+        $to = $event->getTo();
+        $worldName = $to->getWorld()->getFolderName();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
+        if (!($worldSettings instanceof WorldSettings)) {
+            return;
+        }
+
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        if (!$worldBorder->isVectorInXZ($to)) {
+            $from = $event->getFrom();
+            if ($worldBorder->isVectorInXZ($from)) {
+                $oppositeMoveDirection = $from->subtractVector($to);
+                $event->getPlayer()->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
+            } else {
+                $worldBorder->expand(1.0, 0.0, 1.0);
+                if (!$worldBorder->isVectorInXZ($from)) {
+                    $event->getPlayer()->teleport(new Vector3(
+                        min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
+                        $to->y,
+                        min(max($to->z, $worldBorder->minZ), $worldBorder->maxZ)
+                    ));
+                }
+            }
+            return;
+        }
+
         Await::f2c(
             static function () use ($event) : \Generator {
-                $toPosition = $event->getTo();
-                $worldSettings = yield from DataProvider::getInstance()->awaitWorld($toPosition->getWorld()->getFolderName());
-                if (!$worldSettings instanceof WorldSettings) {
-                    return;
-                }
-
                 /** @var Plot|null $plotTo */
-                $plotTo = yield from Plot::awaitFromPosition($toPosition);
+                $plotTo = yield from Plot::awaitFromPosition($event->getTo());
                 /** @var Plot|null $plotFrom */
                 $plotFrom = yield from Plot::awaitFromPosition($event->getFrom());
 

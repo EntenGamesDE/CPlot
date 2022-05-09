@@ -18,6 +18,7 @@ use ColinHDev\CPlot\plots\PlotRate;
 use ColinHDev\CPlot\provider\cache\Cache;
 use ColinHDev\CPlot\provider\cache\CacheIDs;
 use ColinHDev\CPlot\ResourceManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\utils\ParseUtils;
 use ColinHDev\CPlot\worlds\NonWorldSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
@@ -41,6 +42,7 @@ final class DataProvider {
     use SingletonTrait;
 
     private const INIT_FOREIGN_KEYS = "cplot.init.foreignKeys";
+    private const INIT_SERVERS_TABLE = "cplot.init.serversTable";
     private const INIT_PLAYERDATA_TABLE = "cplot.init.playerDataTable";
     private const INIT_ASTERISK_PLAYER = "cplot.init.asteriskPlayer";
     private const INIT_PLAYERSETTINGS_TABLE = "cplot.init.playerSettingsTable";
@@ -51,6 +53,8 @@ final class DataProvider {
     private const INIT_PLOTFLAGS_TABLE = "cplot.init.plotFlagsTable";
     private const INIT_PLOTRATES_TABLE = "cplot.init.plotRatesTable";
 
+    private const GET_SERVER_BY_NAME = "cplot.get.serverByName";
+    private const GET_SERVER_BY_COORDINATES = "cplot.get.serverByCoordinates";
     private const GET_PLAYERDATA_BY_IDENTIFIER = "cplot.get.playerDataByIdentifier";
     private const GET_PLAYERDATA_BY_UUID = "cplot.get.playerDataByUUID";
     private const GET_PLAYERDATA_BY_XUID = "cplot.get.playerDataByXUID";
@@ -67,6 +71,7 @@ final class DataProvider {
     private const GET_PLOTFLAGS = "cplot.get.plotFlags";
     private const GET_PLOTRATES = "cplot.get.plotRates";
 
+    private const SET_SERVER = "cplot.set.server";
     private const SET_NEW_PLAYERDATA = "cplot.set.newPlayerData";
     private const SET_PLAYERDATA = "cplot.set.playerData";
     private const SET_PLAYERSETTING = "cplot.set.playerSetting";
@@ -134,6 +139,19 @@ final class DataProvider {
      */
     private function initializeDatabase() : Generator {
         yield $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS);
+        yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
+        $serverName = ResourceManager::getInstance()->getConfig()->get("serverName", "CityBuild-1");
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
+        /** @phpstan-var array{x: int, z: int}|null $serverData */
+        $serverData = $rows[array_key_first($rows)] ?? null;
+        if ($serverData === null) {
+            $serverX = 0;
+            $serverZ = 0;
+        } else {
+            $serverX = $serverData["x"];
+            $serverZ = $serverData["z"];
+        }
+        ServerSettings::setInstance(new ServerSettings($serverName, $serverX, $serverZ));
         yield $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE);
         yield $this->database->asyncGeneric(self::INIT_ASTERISK_PLAYER, ["lastJoin" => date("d.m.Y H:i:s")]);
         yield $this->database->asyncGeneric(self::INIT_PLAYERSETTINGS_TABLE);
@@ -155,6 +173,20 @@ final class DataProvider {
      */
     public function getPlayerIdentifierType() : string {
         return $this->playerIdentifierType;
+    }
+
+    /**
+     * @phpstan-return \Generator<int, mixed, mixed, string>
+     */
+    public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
+        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["x" => $serverX, "z" => $serverZ]);
+        /** @phpstan-var string|null $serverName */
+        $serverName = $rows[array_key_first($rows)]["name"];
+        if (count($rows) === 1) {
+            $serverName = "CityBuild-" . (((int) $serverName) + 1);
+            yield $this->database->asyncInsert(self::SET_SERVER, ["name" => $serverName, "x" => $serverX, "z" => $serverZ]);
+        }
+        return $serverName;
     }
 
     /**

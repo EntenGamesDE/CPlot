@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace ColinHDev\CPlot\plots;
 
 use ColinHDev\CPlot\attributes\BaseAttribute;
+use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\player\PlayerData;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\flags\FlagManager;
 use ColinHDev\CPlot\provider\DataProvider;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\NonWorldSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
+use matze\cloudbridge\Loader;
+use matze\cloudbridge\network\packets\types\CPlotTeleportToPlotPacket;
 use pocketmine\entity\Location;
 use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
+use SOFe\AwaitGenerator\Await;
 
 class Plot extends BasePlot {
 
@@ -309,6 +314,34 @@ class Plot extends BasePlot {
                 $world = $this->getWorld();
                 if ($world === null) {
                     return false;
+                }
+                $serverSettings = ServerSettings::getInstance();
+                $worldSize = $serverSettings->getWorldSize();
+                $serverX = (int) floor($this->x / $worldSize);
+                $serverZ = (int) floor($this->z / $worldSize);
+                if ($serverX !== $serverSettings->getX() || $serverZ !== $serverSettings->getZ()) {
+                    Await::f2c(
+                        static function() use($serverX, $serverZ) : \Generator {
+                            /** @phpstan-var string $serverName */
+                            $serverName = yield DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ);
+                            return $serverName;
+                        },
+                        function(string $serverName) use($player, $relativeSpawn) : void {
+                            if (!($player->isConnected())) {
+                                return;
+                            }
+                            $spawn = $relativeSpawn->addVector($this->getVector3());
+                            $packet = CPlotTeleportPacket::create(
+                                $player->getName(),
+                                $serverName,
+                                $this->worldName,
+                                $spawn->x, $spawn->y, $spawn->z,
+                                $relativeSpawn->yaw, $relativeSpawn->pitch
+                            );
+                            $packet->send();
+                        }
+                    );
+                    return true;
                 }
                 return $player->teleport(
                     Location::fromObject(

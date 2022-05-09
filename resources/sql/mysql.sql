@@ -6,6 +6,14 @@
 -- #    { foreignKeys
 SET FOREIGN_KEY_CHECKS = 1;
 -- #    }
+-- #    { serversTable
+CREATE TABLE IF NOT EXISTS servers (
+    name  VARCHAR(256)  NOT NULL,
+    x     BIGINT        NOT NULL,
+    z     BIGINT        NOT NULL,
+    PRIMARY KEY (name)
+);
+-- #    }
 -- #    { playerDataTable
 CREATE TABLE IF NOT EXISTS playerData (
     playerID    BIGINT          NOT NULL    AUTO_INCREMENT,
@@ -107,6 +115,19 @@ CREATE TABLE IF NOT EXISTS plotRates (
 -- #  }
 
 -- #  { get
+-- #    { serverByName
+-- #      :name string
+SELECT x, z
+FROM servers
+WHERE name = :name;
+-- #    }
+-- #    { serverByCoordinates
+-- #      :x int
+-- #      :z int
+SELECT name FROM servers WHERE x = :x AND z = :z
+UNION
+SELECT COUNT(name) as name FROM servers;
+-- #    }
 -- #    { playerDataByIdentifier
 -- #      :playerID int
 SELECT playerUUID, playerXUID, playerName, lastJoin
@@ -232,6 +253,12 @@ WHERE worldName = :worldName AND x = :x AND z = :z;
 -- #  }
 
 -- #  { set
+-- #    { server
+-- #      :name string
+-- #      :x int
+-- #      :z int
+INSERT INTO servers (name, x, z) VALUES (:name, :x, :z);
+-- #    }
 -- #    { newPlayerData
 -- #      :playerUUID string
 -- #      :playerXUID string
