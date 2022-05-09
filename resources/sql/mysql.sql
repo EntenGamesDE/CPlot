@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS servers (
 -- #    { playerDataTable
 CREATE TABLE IF NOT EXISTS playerData (
     playerID    BIGINT          NOT NULL    AUTO_INCREMENT,
-    playerUUID  VARCHAR(256),
+    playerUUID  VARBINARY(256),
     playerXUID  VARCHAR(256),
     playerName  VARCHAR(256),
     lastJoin    TEXT            NOT NULL,
