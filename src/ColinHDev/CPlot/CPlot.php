@@ -18,7 +18,7 @@ use ColinHDev\CPlot\listener\EntityItemPickupListener;
 use ColinHDev\CPlot\listener\EntityTrampleFarmlandListener;
 use ColinHDev\CPlot\listener\PlayerDropItemListener;
 use ColinHDev\CPlot\listener\PlayerInteractListener;
-use ColinHDev\CPlot\listener\PlayerLoginListener;
+use ColinHDev\CPlot\listener\PlayerLoadListener;
 use ColinHDev\CPlot\listener\PlayerMoveListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
 use ColinHDev\CPlot\packet\CPlotTeleportPacket;
@@ -68,7 +68,7 @@ class CPlot extends PluginBase {
         $pluginManager->registerEvents(new PlayerDropItemListener(), $this);
         $pluginManager->registerEvents(new PlayerInteractListener(), $this);
         $pluginManager->registerEvents(new PlayerMoveListener(), $this);
-        $pluginManager->registerEvents(new PlayerLoginListener(), $this);
+        $pluginManager->registerEvents(new PlayerLoadListener(), $this);
         $pluginManager->registerEvents(new StructureGrowListener(), $this);
 
         $server->getCommandMap()->register("CPlot", new PlotCommand());

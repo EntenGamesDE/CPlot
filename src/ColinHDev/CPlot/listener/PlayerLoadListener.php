@@ -6,17 +6,13 @@ namespace ColinHDev\CPlot\listener;
 
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
+use ManagerSystem\event\PlayerLoadEvent;
 use pocketmine\event\Listener;
-use pocketmine\event\player\PlayerLoginEvent;
 use SOFe\AwaitGenerator\Await;
 
-class PlayerLoginListener implements Listener {
+class PlayerLoadListener implements Listener {
 
-    public function onPlayerLogin(PlayerLoginEvent $event) : void {
-        if ($event->isCancelled()) {
-            return;
-        }
-
+    public function onPlayerLogin(PlayerLoadEvent $event) : void {
         $player = $event->getPlayer();
         Await::g2c(
             DataProvider::getInstance()->updatePlayerData(
