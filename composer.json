@@ -2,6 +2,8 @@
   "name": "colinhdev/cplot",
   "require": {
     "pocketmine/pocketmine-mp": "4.0.0",
+    "nethergamesmc/bedrock-data": "dev-master",
+    "nethergamesmc/bedrock-protocol": "dev-master",
     "sof3/await-generator": "^3.4.1",
     "sof3/libasynql": "^4.0.1",
     "sofe/capital": "^0.1.2",
@@ -15,6 +17,14 @@
     "phpstan/extension-installer": "^1.1"
   },
   "repositories": {
+    "bedrock-protocol": {
+      "type": "vcs",
+      "url":  "git@github.com:NetherGamesMC/BedrockProtocol.git"
+    },
+    "bedrock-data": {
+      "type": "vcs",
+      "url":  "git@github.com:NetherGamesMC/BedrockData.git"
+    },
     "capital": {
       "type": "vcs",
       "url": "https://github.com/SOF3/Capital"

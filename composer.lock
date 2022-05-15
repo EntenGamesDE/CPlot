@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f2290a6a31cf4d8572d9fde4eac842ff",
+    "content-hash": "c35dac1770423579b0fc1aa1bbb11206",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -240,6 +240,81 @@
                 "source": "https://github.com/fgrosse/PHPASN1/tree/v2.4.0"
             },
             "time": "2021-12-11T12:41:06+00:00"
+        },
+        {
+            "name": "nethergamesmc/bedrock-data",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:NetherGamesMC/BedrockData.git",
+                "reference": "da48a0f88887b2943d2bcf54ed541c198aec1fc0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/da48a0f88887b2943d2bcf54ed541c198aec1fc0",
+                "reference": "da48a0f88887b2943d2bcf54ed541c198aec1fc0",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
+            "time": "2022-04-20T14:25:30+00:00"
+        },
+        {
+            "name": "nethergamesmc/bedrock-protocol",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:NetherGamesMC/BedrockProtocol.git",
+                "reference": "60818ab3480d3bb5769424d592a8c12a0936ea5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/60818ab3480d3bb5769424d592a8c12a0936ea5f",
+                "reference": "60818ab3480d3bb5769424d592a8c12a0936ea5f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "netresearch/jsonmapper": "^4.0",
+                "php": "^8.0",
+                "pocketmine/binaryutils": "^0.2.0",
+                "pocketmine/color": "^0.2.0",
+                "pocketmine/math": "^0.3.0 || ^0.4.0",
+                "pocketmine/nbt": "^0.3.0",
+                "ramsey/uuid": "^4.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "1.6.2",
+                "phpstan/phpstan-phpunit": "^1.0.0",
+                "phpstan/phpstan-strict-rules": "^1.0.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\network\\mcpe\\protocol\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "pocketmine\\network\\mcpe\\protocol\\": "tests/phpunit/"
+                }
+            },
+            "scripts": {
+                "update-create-methods": [
+                    "@php tools/generate-create-static-methods.php"
+                ]
+            },
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
+            "time": "2022-04-30T16:18:09+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -580,16 +655,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.7.0",
+            "version": "2.8.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "f00216c4709d2c5a2af478498315206b336b8e2e"
+                "reference": "113c115a3b8976917eb22b74dccab464831b6483"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/f00216c4709d2c5a2af478498315206b336b8e2e",
-                "reference": "f00216c4709d2c5a2af478498315206b336b8e2e",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/113c115a3b8976917eb22b74dccab464831b6483",
+                "reference": "113c115a3b8976917eb22b74dccab464831b6483",
                 "shasum": ""
             },
             "type": "library",
@@ -597,9 +672,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.7.0"
+                "source": "https://github.com/pmmp/Language/tree/2.8.3"
             },
-            "time": "2022-05-10T13:29:27+00:00"
+            "time": "2022-05-11T13:51:37+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1845,6 +1920,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "nethergamesmc/bedrock-data": 20,
+        "nethergamesmc/bedrock-protocol": 20,
         "sof3/await-std": 20
     },
     "prefer-stable": false,
