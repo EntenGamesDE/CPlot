@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ColinHDev\CPlot\packet;
 
-use matze\cloudbridge\Loader;
 use matze\cloudbridge\network\packets\DataPacket;
 
 class CPlotTeleportPacket extends DataPacket {
@@ -29,9 +28,5 @@ class CPlotTeleportPacket extends DataPacket {
         $packet->yaw = $yaw;
         $packet->pitch = $pitch;
         return $packet;
-    }
-
-    public function send() : void {
-        Loader::getInstance()->getSocket()->write($this);
     }
 }
