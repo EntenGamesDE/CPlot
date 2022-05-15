@@ -331,7 +331,7 @@ class Plot extends BasePlot {
                                 return;
                             }
                             $spawn = $relativeSpawn->addVector($this->getVector3());
-                            $packet = CPlotTeleportPacket::create(
+                            $packet = CPlotTeleportPacket::createFromCoordinates(
                                 $player->getName(),
                                 $serverName,
                                 $this->worldName,
