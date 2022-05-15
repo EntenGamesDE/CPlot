@@ -7,11 +7,11 @@ namespace ColinHDev\CPlot\particles;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
-use pocketmine\world\particle\Particle;
+use pocketmine\world\particle\ProtocolParticle;
 
-class DragonBreathTrailParticle implements Particle {
+class DragonBreathTrailParticle extends ProtocolParticle {
 
     public function encode(Vector3 $pos) : array {
-        return [LevelEventPacket::standardParticle(ParticleIds::DRAGON_BREATH_TRAIL, 0, $pos)];
+        return [LevelEventPacket::standardParticle(ParticleIds::DRAGON_BREATH_TRAIL, 0, $pos, $this->particleProtocol)];
     }
 }
