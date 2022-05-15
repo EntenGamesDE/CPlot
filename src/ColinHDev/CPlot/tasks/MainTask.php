@@ -60,7 +60,11 @@ class MainTask extends Task {
                         if ($particleSpawn instanceof Vector3) {
                             $world->addParticle($particleSpawn, $particle);
                         } else if ($particleSpawn instanceof Sphere) {
+                            /** @var Vector3 $point */
                             foreach ($particleSpawn->getPoints() as $point) {
+                                if ($point->x < $worldBorder->minX || $point->x > $worldBorder->maxX || $point->z < $worldBorder->minZ || $point->z > $worldBorder->maxZ) {
+                                    continue;
+                                }
                                 $world->addParticle(
                                     $point,
                                     $particle
