@@ -49,7 +49,7 @@ class MainTask extends Task {
                 $worldBorder = $this->serverSettings->getWorldBorder($worldName, $worldSettings);
                 foreach ($world->getPlayers() as $player) {
                     $location = $player->getLocation();
-                    $sphere = new Sphere($location->x, $location->y, $location->z, 7.5, 7.5, 7.5);
+                    $sphere = new Sphere($location->x, $location->y, $location->z, 15.0, 15.0, 15.0);
                     $particle = new DustParticle(new Color(130, 2, 150));
                     foreach (
                         [
