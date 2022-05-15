@@ -5,17 +5,18 @@ declare(strict_types=1);
 namespace ColinHDev\CPlot\tasks;
 
 use ColinHDev\CPlot\math\Sphere;
-use ColinHDev\CPlot\particles\DragonBreathTrailParticle;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
+use pocketmine\color\Color;
 use pocketmine\entity\Human;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
+use pocketmine\world\particle\DustParticle;
 use pocketmine\world\Position;
 use pocketmine\world\WorldManager;
 
@@ -49,7 +50,7 @@ class MainTask extends Task {
                 foreach ($world->getPlayers() as $player) {
                     $location = $player->getLocation();
                     $sphere = new Sphere($location->x, $location->y, $location->z, 7.5, 7.5, 7.5);
-                    $particle = new DragonBreathTrailParticle();
+                    $particle = new DustParticle(new Color(130, 2, 150));
                     foreach (
                         [
                             $sphere->getXIntersection($worldBorder->minX),
