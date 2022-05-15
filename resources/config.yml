@@ -1,6 +1,3 @@
-
-serverName: "CityBuild-1"
-
 # decide if only subcommands a player has permissions for should be shown in the help menu
 # possible values: true, false
 # default value: true

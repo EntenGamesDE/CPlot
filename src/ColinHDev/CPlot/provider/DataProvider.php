@@ -24,6 +24,7 @@ use ColinHDev\CPlot\worlds\NonWorldSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use Generator;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use pocketmine\utils\SingletonTrait;
 use poggit\libasynql\DataConnector;
 use poggit\libasynql\libasynql;
@@ -140,7 +141,7 @@ final class DataProvider {
     private function initializeDatabase() : Generator {
         yield $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS);
         yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
-        $serverName = ResourceManager::getInstance()->getConfig()->get("serverName", "CityBuild-1");
+        $serverName = Server::getInstance()->getMotd();
         $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
         /** @phpstan-var array{x: int, z: int}|null $serverData */
         $serverData = $rows[array_key_first($rows)] ?? null;
