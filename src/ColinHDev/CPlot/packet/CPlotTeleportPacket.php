@@ -4,29 +4,25 @@ declare(strict_types=1);
 
 namespace ColinHDev\CPlot\packet;
 
-use matze\cloudbridge\network\packets\DataPacket;
+use matze\cloudbridge\network\packets\types\PlayerTransferPacket;
+use matze\cloudbridge\network\packets\utils\PlayerTransferCoordinates;
+use matze\cloudbridge\network\packets\utils\PlayerTransferDestination;
 
-class CPlotTeleportPacket extends DataPacket {
+class CPlotTeleportPacket extends PlayerTransferPacket {
 
-    public string $playerName;
-    public string $serverName;
-    public string $worldName;
-    public float $x;
-    public float $y;
-    public float $z;
-    public float $yaw;
-    public float $pitch;
+    /** @var PlayerTransferCoordinates */
+    public PlayerTransferDestination $destination;
 
-    public static function create(string $playerName, string $serverName, string $worldName, float $x, float $y, float $z, float $yaw, float $pitch) : self {
-        $packet = new self();
-        $packet->playerName = $playerName;
-        $packet->serverName = $serverName;
-        $packet->worldName = $worldName;
-        $packet->x = $x;
-        $packet->y = $y;
-        $packet->z = $z;
-        $packet->yaw = $yaw;
-        $packet->pitch = $pitch;
+    public static function create(PlayerTransferDestination $destination) : self {
+        assert($destination instanceof PlayerTransferCoordinates);
+        $packet = new self;
+        $packet->destination = $destination;
         return $packet;
+    }
+
+    public static function createFromCoordinates(string $playerName, string $serverName, string $worldName, float $x, float $y, float $z, float $yaw, float $pitch) : self {
+        return self::create(
+            new PlayerTransferCoordinates($playerName, $serverName, $worldName, $x, $y, $z, $yaw, $pitch)
+        );
     }
 }
