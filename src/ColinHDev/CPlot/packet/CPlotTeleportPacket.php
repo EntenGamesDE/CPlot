@@ -10,7 +10,6 @@ use matze\cloudbridge\network\packets\utils\PlayerTransferDestination;
 
 class CPlotTeleportPacket extends PlayerTransferPacket {
 
-    /** @var PlayerTransferCoordinates */
     public PlayerTransferDestination $destination;
 
     public static function create(PlayerTransferDestination $destination) : self {

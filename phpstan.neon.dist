@@ -8,6 +8,8 @@ parameters:
 	    - phar://virions/libasynql.phar/src
 	    - phar://virions/pmforms.phar/src
 	    - /vendor/cooldogedev/bedrockeconomy/src
+	    - /vendor/entengamesde/cloudbridge/src
+	    - /vendor/entengamesde/managersystem/src
 	ignoreErrors:
 		-
 			message: '#Call to an undefined method [a-zA-Z0-9\\_]+::asyncGeneric\(\)#'

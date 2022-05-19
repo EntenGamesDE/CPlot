@@ -41,15 +41,12 @@ class PlayerMoveListener implements Listener {
             if ($worldBorder->isVectorInXZ($from)) {
                 $oppositeMoveDirection = $from->subtractVector($to);
                 $event->getPlayer()->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
-            } else {
-                $worldBorder->expand(1.0, 0.0, 1.0);
-                if (!$worldBorder->isVectorInXZ($from)) {
-                    $event->getPlayer()->teleport(new Vector3(
-                        min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
-                        $to->y,
-                        min(max($to->z, $worldBorder->minZ), $worldBorder->maxZ)
-                    ));
-                }
+            } else if (!($worldBorder->expand(1.0, 0.0, 1.0)->isVectorInXZ($from))) {
+                $event->getPlayer()->teleport(new Vector3(
+                    min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
+                    $to->y,
+                    min(max($to->z, $worldBorder->minZ), $worldBorder->maxZ)
+                ));
             }
             return;
         }
