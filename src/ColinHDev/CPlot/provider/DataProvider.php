@@ -154,7 +154,7 @@ final class DataProvider {
         ];
         yield from Await::all($generators);
         $serverName = Server::getInstance()->getMotd();
-        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
+        $rows = yield from $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
         /** @phpstan-var array{x: int, z: int}|null $serverData */
         $serverData = $rows[array_key_first($rows)] ?? null;
         if ($serverData === null) {
@@ -184,12 +184,20 @@ final class DataProvider {
      * @phpstan-return \Generator<int, mixed, mixed, string>
      */
     public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
-        $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_COORDINATES, ["x" => $serverX, "z" => $serverZ]);
-        /** @phpstan-var string|null $serverName */
-        $serverName = $rows[array_key_first($rows)]["name"];
+        // This query returns the server name, assigned to the given coordinates, if it exists and the count of servers
+        // in the database.
+        $rows = yield from $this->database->asyncSelect(self::GET_SERVER_BY_COORDINATES, ["x" => $serverX, "z" => $serverZ]);
+        // If the result only contains one row, this means that there is no server with the given coordinates.
         if (count($rows) === 1) {
-            $serverName = "CityBuild-" . (((int) $serverName) + 1);
-            yield $this->database->asyncInsert(self::SET_SERVER, ["name" => $serverName, "x" => $serverX, "z" => $serverZ]);
+            // So the given line only gives us the number of existing servers, which we can use to determine the name
+            // of our new server.
+            $serverID = (int) $rows[array_key_first($rows)]["name"];
+            $serverName = "CityBuild-" . ($serverID + 1);
+            yield from $this->database->asyncInsert(self::SET_SERVER, ["name" => $serverName, "x" => $serverX, "z" => $serverZ]);
+        } else {
+            // If the result contains more than one row, this means that there is already a server with the given coordinates.
+            /** @phpstan-var string $serverName */
+            $serverName = $rows[array_key_first($rows)]["name"];
         }
         return $serverName;
     }
