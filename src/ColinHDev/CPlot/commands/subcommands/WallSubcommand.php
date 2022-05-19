@@ -6,7 +6,6 @@ namespace ColinHDev\CPlot\commands\subcommands;
 
 use ColinHDev\CPlot\attributes\BooleanAttribute;
 use ColinHDev\CPlot\commands\Subcommand;
-use ColinHDev\CPlot\event\PlotWallChangeAsyncEvent;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
@@ -126,31 +125,24 @@ class WallSubcommand extends Subcommand {
             return;
         }
 
-        /** @phpstan-var PlotWallChangeAsyncEvent $event */
-        $event = yield from PlotWallChangeAsyncEvent::create($plot, $this->blocks[$selectedOption], $player);
-        if ($event->isCancelled()) {
-            return;
-        }
-        $block = $event->getBlock();
-
         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "wall.start"]);
-        $world = $player->getWorld();
-        $task = new PlotWallChangeAsyncTask($world, $worldSettings, $plot, $block);
-        $task->setCallback(
-            static function (int $elapsedTime, string $elapsedTimeString, mixed $result) use ($world, $plot, $player, $block) {
-                $plotCount = count($plot->getMergePlots()) + 1;
-                $plots = array_map(
-                    static function (BasePlot $plot) : string {
-                        return $plot->toSmallString();
-                    },
-                    array_merge([$plot], $plot->getMergePlots())
-                );
-                Server::getInstance()->getLogger()->debug(
-                    "Changing plot wall to " . $block->getName() . " (ID:Meta: " . $block->getId() . ":" . $block->getMeta() . ") in world " . $world->getDisplayName() . " (folder: " . $world->getFolderName() . ") took " . $elapsedTimeString . " (" . $elapsedTime . "ms) for player " . $player->getUniqueId()->getBytes() . " (" . $player->getName() . ") for " . $plotCount . " plot" . ($plotCount > 1 ? "s" : "") . ": [" . implode(", ", $plots) . "]."
-                );
-                LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "wall.finish" => [$elapsedTimeString, $block->getName()]]);
-            }
+        $block = $this->blocks[$selectedOption];
+        /** @phpstan-var PlotWallChangeAsyncTask $task */
+        $task = yield from Await::promise(
+            static fn($resolve) => $plot->setWallBlock($block, $resolve)
         );
-        Server::getInstance()->getAsyncPool()->submitTask($task);
+        $world = $player->getWorld();
+        $plotCount = count($plot->getMergePlots()) + 1;
+        $plots = array_map(
+            static function (BasePlot $plot) : string {
+                return $plot->toSmallString();
+            },
+            array_merge([$plot], $plot->getMergePlots())
+        );
+        $elapsedTimeString = $task->getElapsedTimeString();
+        Server::getInstance()->getLogger()->debug(
+            "Changing plot wall to " . $block->getName() . " (ID:Meta: " . $block->getId() . ":" . $block->getMeta() . ") in world " . $world->getDisplayName() . " (folder: " . $world->getFolderName() . ") took " . $elapsedTimeString . " (" . $task->getElapsedTime() . "ms) for player " . $player->getUniqueId()->getBytes() . " (" . $player->getName() . ") for " . $plotCount . " plot" . ($plotCount > 1 ? "s" : "") . ": [" . implode(", ", $plots) . "]."
+        );
+        LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "wall.finish" => [$elapsedTimeString, $block->getName()]]);
     }
 }

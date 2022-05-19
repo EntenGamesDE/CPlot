@@ -116,12 +116,12 @@ final class DataProvider {
 
         /** @phpstan-var array{"cache_player": Cache<PlayerID, PlayerData>, "cache_player_uuid": Cache<PlayerUUID, PlayerID>, "cache_player_xuid": Cache<PlayerXUID, PlayerID>, "cache_player_name": Cache<PlayerName, PlayerID>, "cache_worldSetting": Cache<string, WorldSettings|NonWorldSettings>, "cache_plot": Cache<string, BasePlot>} $caches */
         $caches = [
-            CacheIDs::CACHE_PLAYER => new Cache(64),
-            CacheIDs::CACHE_PLAYER_UUID => new Cache(64),
-            CacheIDs::CACHE_PLAYER_XUID => new Cache(64),
-            CacheIDs::CACHE_PLAYER_NAME => new Cache(64),
-            CacheIDs::CACHE_WORLDSETTING => new Cache(16),
-            CacheIDs::CACHE_PLOT => new Cache(128),
+            CacheIDs::CACHE_PLAYER => new Cache(256),
+            CacheIDs::CACHE_PLAYER_UUID => new Cache(256),
+            CacheIDs::CACHE_PLAYER_XUID => new Cache(256),
+            CacheIDs::CACHE_PLAYER_NAME => new Cache(256),
+            CacheIDs::CACHE_WORLDSETTING => new Cache(64),
+            CacheIDs::CACHE_PLOT => new Cache(256),
         ];
         $this->caches = $caches;
 
@@ -136,11 +136,23 @@ final class DataProvider {
     }
 
     /**
-     * @phpstan-return Generator<int, mixed, null, void>
+     * @phpstan-return Generator<mixed, mixed, mixed, void>
      */
     private function initializeDatabase() : Generator {
-        yield $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS);
-        yield $this->database->asyncGeneric(self::INIT_SERVERS_TABLE);
+        /** @phpstan-var (Generator<mixed, Await::RESOLVE|Await::REJECT, mixed, null>)[] $generators */
+        $generators = [
+            $this->database->asyncGeneric(self::INIT_FOREIGN_KEYS),
+            $this->database->asyncGeneric(self::INIT_SERVERS_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLAYERSETTINGS_TABLE),
+            $this->database->asyncGeneric(self::INIT_WORLDS_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLOTALIASES_TABLE),
+            $this->database->asyncGeneric(self::INIT_MERGEPLOTS_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLOTPLAYERS_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLOTFLAGS_TABLE),
+            $this->database->asyncGeneric(self::INIT_PLOTRATES_TABLE)
+        ];
+        yield from Await::all($generators);
         $serverName = Server::getInstance()->getMotd();
         $rows = yield $this->database->asyncSelect(self::GET_SERVER_BY_NAME, ["name" => $serverName]);
         /** @phpstan-var array{x: int, z: int}|null $serverData */
@@ -153,15 +165,7 @@ final class DataProvider {
             $serverZ = $serverData["z"];
         }
         ServerSettings::setInstance(new ServerSettings($serverName, $serverX, $serverZ));
-        yield $this->database->asyncGeneric(self::INIT_PLAYERDATA_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_ASTERISK_PLAYER, ["lastJoin" => date("d.m.Y H:i:s")]);
-        yield $this->database->asyncGeneric(self::INIT_PLAYERSETTINGS_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_WORLDS_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_PLOTALIASES_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_MERGEPLOTS_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_PLOTPLAYERS_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_PLOTFLAGS_TABLE);
-        yield $this->database->asyncGeneric(self::INIT_PLOTRATES_TABLE);
+        yield from $this->database->asyncGeneric(self::INIT_ASTERISK_PLAYER, ["lastJoin" => date("d.m.Y H:i:s")]);
         $this->isInitialized = true;
     }
 
@@ -1044,17 +1048,15 @@ final class DataProvider {
     }
 
     /**
-     * @phpstan-return Generator<int, mixed, void, void>
+     * @phpstan-return Generator<mixed, mixed, mixed, void>
      */
     public function addMergePlot(Plot $origin, BasePlot $plot) : Generator {
-        yield $this->database->asyncInsert(
+        yield from $this->database->asyncInsert(
             self::SET_MERGEPLOT,
             [
                 "worldName" => $origin->getWorldName(),
-                "originX" => $origin->getX(),
-                "originZ" => $origin->getZ(),
-                "mergeX" => $plot->getX(),
-                "mergeZ" => $plot->getZ()
+                "originX" => $origin->getX(), "originZ" => $origin->getZ(),
+                "mergeX" => $plot->getX(), "mergeZ" => $plot->getZ()
             ]
         );
         $this->caches[CacheIDs::CACHE_PLOT]->cacheObject($origin->toString(), $origin);
@@ -1089,15 +1091,13 @@ final class DataProvider {
     }
 
     /**
-     * @phpstan-return Generator<int, mixed, void, void>
+     * @phpstan-return Generator<mixed, mixed, mixed, void>
      */
     public function savePlotPlayer(Plot $plot, PlotPlayer $plotPlayer) : Generator {
-        yield $this->database->asyncInsert(
+        yield from $this->database->asyncInsert(
             self::SET_PLOTPLAYER,
             [
-                "worldName" => $plot->getWorldName(),
-                "x" => $plot->getX(),
-                "z" => $plot->getZ(),
+                "worldName" => $plot->getWorldName(), "x" => $plot->getX(), "z" => $plot->getZ(),
                 "playerID" => $plotPlayer->getPlayerData()->getPlayerID(),
                 "state" => $plotPlayer->getState(),
                 "addTime" => date("d.m.Y H:i:s", $plotPlayer->getAddTime())
@@ -1123,17 +1123,14 @@ final class DataProvider {
     }
 
     /**
-     * @phpstan-template TAttributeValue
-     * @phpstan-param BaseAttribute<TAttributeValue> $flag
-     * @phpstan-return Generator<int, mixed, void, void>
+     * @phpstan-param BaseAttribute<mixed> $flag
+     * @phpstan-return Generator<mixed, mixed, mixed, void>
      */
     public function savePlotFlag(Plot $plot, BaseAttribute $flag) : Generator {
-        yield $this->database->asyncInsert(
+        yield from $this->database->asyncInsert(
             self::SET_PLOTFLAG,
             [
-                "worldName" => $plot->getWorldName(),
-                "x" => $plot->getX(),
-                "z" => $plot->getZ(),
+                "worldName" => $plot->getWorldName(), "x" => $plot->getX(), "z" => $plot->getZ(),
                 "ID" => $flag->getID(),
                 "value" => $flag->toString()
             ]
@@ -1158,15 +1155,13 @@ final class DataProvider {
     }
 
     /**
-     * @phpstan-return Generator<int, mixed, void, void>
+     * @phpstan-return Generator<mixed, mixed, mixed, void>
      */
     public function savePlotRate(Plot $plot, PlotRate $plotRate) : Generator {
-        yield $this->database->asyncInsert(
+        yield from $this->database->asyncInsert(
             self::SET_PLOTRATE,
             [
-                "worldName" => $plot->getWorldName(),
-                "x" => $plot->getX(),
-                "z" => $plot->getZ(),
+                "worldName" => $plot->getWorldName(), "x" => $plot->getX(), "z" => $plot->getZ(),
                 "rate" => $plotRate->getRate(),
                 "playerID" => $plotRate->getPlayerData()->getPlayerID(),
                 "rateTime" => date("d.m.Y H:i:s", $plotRate->getRateTime()),

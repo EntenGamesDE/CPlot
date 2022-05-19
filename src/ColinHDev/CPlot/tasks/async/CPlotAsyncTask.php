@@ -14,11 +14,11 @@ abstract class CPlotAsyncTask extends AsyncTask {
         $this->startTime = (int) (round(microtime(true) * 1000));
     }
 
-    protected function getElapsedTime() : int {
+    public function getElapsedTime() : int {
         return ((int) (round(microtime(true) * 1000))) - $this->startTime;
     }
 
-    protected function getElapsedTimeString() : string {
+    public function getElapsedTimeString() : string {
         $ms = $this->getElapsedTime();
         $min = floor($ms / 60000);
         $ms -= $min * 60000;
@@ -40,11 +40,13 @@ abstract class CPlotAsyncTask extends AsyncTask {
     }
 
     /**
-     * @phpstan-param callable(int, string, mixed): void $onSuccess
-     * @phpstan-param null|callable(): void $onError
+     * @phpstan-param (callable(static): void)|null $onSuccess
+     * @phpstan-param (callable(static): void)|null $onError
      */
-    public function setCallback(callable $onSuccess, ?callable $onError = null) : void {
-        $this->storeLocal("onSuccess", $onSuccess);
+    public function setCallback(?callable $onSuccess, ?callable $onError) : void {
+        if ($onSuccess !== null) {
+            $this->storeLocal("onSuccess", $onSuccess);
+        }
         if ($onError !== null) {
             $this->storeLocal("onError", $onError);
         }
@@ -52,18 +54,18 @@ abstract class CPlotAsyncTask extends AsyncTask {
 
     public function onCompletion() : void {
         try {
-            /** @phpstan-var callable(int, string, mixed): void $callback */
+            /** @phpstan-var callable(static): void $callback */
             $callback = $this->fetchLocal("onSuccess");
-            $callback($this->getElapsedTime(), $this->getElapsedTimeString(), $this->getResult());
+            $callback($this);
         } catch (\InvalidArgumentException) {
         }
     }
 
     public function onError() : void {
         try {
-            /** @phpstan-var callable(): void $callback */
+            /** @phpstan-var callable(static): void $callback */
             $callback = $this->fetchLocal("onError");
-            $callback();
+            $callback($this);
         } catch (\InvalidArgumentException) {
         }
     }
