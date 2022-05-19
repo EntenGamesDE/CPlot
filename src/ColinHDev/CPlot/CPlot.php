@@ -24,7 +24,8 @@ use ColinHDev\CPlot\listener\StructureGrowListener;
 use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\EconomyManager;
-use ColinHDev\CPlot\tasks\MainTask;
+use ColinHDev\CPlot\tasks\EntityMovementTask;
+use ColinHDev\CPlot\tasks\ParticleSpawnTask;
 use ColinHDev\CPlot\worlds\generator\PlotGenerator;
 use ColinHDev\CPlot\worlds\generator\SchematicGenerator;
 use matze\cloudbridge\network\packets\DataPacketManager;
@@ -50,7 +51,8 @@ class CPlot extends PluginBase {
 
         DataPacketManager::getInstance()->registerPacket(new CPlotTeleportPacket());
 
-        $this->getScheduler()->scheduleRepeatingTask(new MainTask(), 1);
+        $this->getScheduler()->scheduleRepeatingTask(new EntityMovementTask(), 1);
+        $this->getScheduler()->scheduleRepeatingTask(new ParticleSpawnTask(), 5);
 
         $server = $this->getServer();
         $pluginManager = $server->getPluginManager();
