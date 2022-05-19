@@ -62,7 +62,7 @@
         "version": "2.1.0",
         "source": {
           "type": "git",
-          "url": "https://github.com/EntenGamesDE/CloudBridge",
+          "url": "https://github.com/EntenGamesDE/ManagerSystem",
           "reference": "pm4"
         }
       }

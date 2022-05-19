@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a20a0ab9b871cab6b97d5bc8d06d858",
+    "content-hash": "5aa5f8bcdfd943d248eba821954a9fc0",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -181,7 +181,7 @@
             "version": "2.1.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/EntenGamesDE/CloudBridge",
+                "url": "https://github.com/EntenGamesDE/ManagerSystem",
                 "reference": "pm4"
             },
             "type": "library"
