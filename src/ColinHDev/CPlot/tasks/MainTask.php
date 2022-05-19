@@ -59,7 +59,7 @@ class MainTask extends Task {
                             $sphere->getZIntersection($worldBorder->maxZ)
                         ] as $particleSpawn) {
                         if ($particleSpawn instanceof Vector3) {
-                            $world->addParticle($particleSpawn, $particle);
+                            $world->addParticle($particleSpawn, $particle, [$player]);
                         } else if ($particleSpawn instanceof Sphere) {
                             /** @var Vector3 $point */
                             foreach ($particleSpawn->getPoints() as $point) {
@@ -68,7 +68,8 @@ class MainTask extends Task {
                                 }
                                 $world->addParticle(
                                     $point,
-                                    $particle
+                                    $particle,
+                                    [$player]
                                 );
                             }
                         }
