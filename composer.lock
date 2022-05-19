@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c35dac1770423579b0fc1aa1bbb11206",
+    "content-hash": "1a20a0ab9b871cab6b97d5bc8d06d858",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -163,6 +163,26 @@
                 "type": "git",
                 "url": "https://github.com/cooldogedev/BedrockEconomy",
                 "reference": "main"
+            },
+            "type": "library"
+        },
+        {
+            "name": "entengamesde/cloudbridge",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EntenGamesDE/CloudBridge",
+                "reference": "pm4"
+            },
+            "type": "library"
+        },
+        {
+            "name": "entengamesde/managersystem",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/EntenGamesDE/CloudBridge",
+                "reference": "pm4"
             },
             "type": "library"
         },
