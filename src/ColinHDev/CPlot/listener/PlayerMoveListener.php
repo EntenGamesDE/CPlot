@@ -28,7 +28,8 @@ use SOFe\AwaitGenerator\Await;
 class PlayerMoveListener implements Listener {
 
     public function onPlayerMove(PlayerMoveEvent $event) : void {
-        $worldName = $event->getTo()->getWorld()->getFolderName();
+        $to = $event->getTo();
+        $worldName = $to->getWorld()->getFolderName();
         $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
         if (!($worldSettings instanceof WorldSettings)) {
             return;
