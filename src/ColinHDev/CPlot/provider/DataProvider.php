@@ -183,7 +183,7 @@ final class DataProvider {
     /**
      * @phpstan-return \Generator<int, mixed, mixed, string>
      */
-    public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
+    public function awaitAndInsertServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
         // This query returns the server name, assigned to the given coordinates, if it exists and the count of servers
         // in the database.
         $rows = yield from $this->database->asyncSelect(self::GET_SERVER_BY_COORDINATES, ["x" => $serverX, "z" => $serverZ]);
