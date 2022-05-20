@@ -80,7 +80,7 @@ class BasePlot {
                 Await::f2c(
                     static function() use($serverX, $serverZ) : \Generator {
                         /** @phpstan-var string $serverName */
-                        $serverName = yield DataProvider::getInstance()->awaitAndInsertServerNameByCoordinates($serverX, $serverZ);
+                        $serverName = yield DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($serverX, $serverZ);
                         return $serverName;
                     },
                     function(string $serverName) use($player, $relativeSpawn) : void {

@@ -181,9 +181,37 @@ final class DataProvider {
     }
 
     /**
+     * Fetches the name of a server by its x and z coordinate asynchronously from the database or null if a
+     * corresponding server does not exist.
+     * Returns a {@see \Generator}, which can be handled by using {@see Await} to get the result.
+     * @param int $serverX The x coordinate of the server
+     * @param int $serverZ The z coordinate of the server
+     * @phpstan-return \Generator<int, mixed, mixed, string|null>
+     */
+    public function awaitServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
+        // This query returns the server name, assigned to the given coordinates, if it exists and the count of servers
+        // in the database.
+        $rows = yield from $this->database->asyncSelect(self::GET_SERVER_BY_COORDINATES, ["x" => $serverX, "z" => $serverZ]);
+        // If the result only contains one row, this means that there is no server with the given coordinates.
+        if (count($rows) === 1) {
+            return null;
+        }
+        // If the result contains more than one row, this means that there is already a server with the given coordinates.
+        /** @phpstan-var string $serverName */
+        $serverName = $rows[array_key_first($rows)]["name"];
+        return $serverName;
+    }
+
+    /**
+     * Fetches the name of a server by its x and z coordinate asynchronously from the database. If a corresponding
+     * server does not exist, a new server is inserted into the database with the given coordinates and its newly formed
+     * name is returned.
+     * Returns a {@see \Generator}, which can be handled by using {@see Await} to get the result.
+     * @param int $serverX The x coordinate of the server
+     * @param int $serverZ The z coordinate of the server
      * @phpstan-return \Generator<int, mixed, mixed, string>
      */
-    public function awaitAndInsertServerNameByCoordinates(int $serverX, int $serverZ) : \Generator {
+    public function awaitServerNameByCoordinatesNonNull(int $serverX, int $serverZ) : \Generator {
         // This query returns the server name, assigned to the given coordinates, if it exists and the count of servers
         // in the database.
         $rows = yield from $this->database->asyncSelect(self::GET_SERVER_BY_COORDINATES, ["x" => $serverX, "z" => $serverZ]);
