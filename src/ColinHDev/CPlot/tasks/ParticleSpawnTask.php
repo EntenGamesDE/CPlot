@@ -9,12 +9,10 @@ use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\color\Color;
-use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 use pocketmine\world\particle\DustParticle;
-use pocketmine\world\particle\Particle;
 use pocketmine\world\World;
 use pocketmine\world\WorldManager;
 use SOFe\AwaitGenerator\Await;
@@ -25,9 +23,15 @@ class ParticleSpawnTask extends Task {
     private ServerSettings $serverSettings;
     /** @phpstan-var array<int, string> */
     private array $servers = [];
+    private DustParticle $borderParticle;
+    private DustParticle $existingServerParticle;
+    private DustParticle $unknownServerParticle;
 
     public function __construct() {
         $this->worldManager = Server::getInstance()->getWorldManager();
+        $this->borderParticle = new DustParticle(new Color(130, 2, 150));
+        $this->existingServerParticle = new DustParticle(new Color(0, 251, 0));
+        $this->unknownServerParticle = new DustParticle(new Color(251, 162, 0));
     }
 
     public function onRun() : void {
@@ -57,68 +61,19 @@ class ParticleSpawnTask extends Task {
                         $sphere->getZIntersection($worldBorder->maxZ)
                     ] as $particleSpawn) {
                     if ($particleSpawn instanceof Vector3) {
-                        $world->addParticle($particleSpawn, $this->getParticleForPosition($worldSettings, $worldBorder, $particleSpawn), [$player]);
+                        $world->addParticle($particleSpawn, $this->borderParticle, [$player]);
                     } else if ($particleSpawn instanceof Sphere) {
                         /** @var Vector3 $point */
                         foreach ($particleSpawn->getPoints() as $point) {
                             if ($point->x < $worldBorder->minX || $point->x > $worldBorder->maxX || $point->z < $worldBorder->minZ || $point->z > $worldBorder->maxZ) {
                                 continue;
                             }
-                            $world->addParticle($point, $this->getParticleForPosition($worldSettings, $worldBorder, $point), [$player]);
+                            $world->addParticle($point, $this->borderParticle, [$player]);
                         }
                     }
                 }
             }
         }
-    }
-
-    private function getParticleForPosition(WorldSettings $worldSettings, AxisAlignedBB $worldBorder, Vector3 $vector3) : Particle {
-        $totalSize = $worldSettings->getPlotSize() + $worldSettings->getRoadSize();
-
-        $x = $vector3->getFloorX() - $worldSettings->getRoadSize();
-        if ($x >= 0) {
-            $difX = $x % $totalSize;
-        } else {
-            $difX = abs(($x - $worldSettings->getPlotSize() + 1) % $totalSize);
-        }
-
-        $z = $vector3->getFloorZ() - $worldSettings->getRoadSize();
-        if ($z >= 0) {
-            $difZ = $z % $totalSize;
-        } else {
-            $difZ = abs(($z - $worldSettings->getPlotSize() + 1) % $totalSize);
-        }
-
-        if ($difX > $worldSettings->getPlotSize() - 1 && $vector3->x !== $worldBorder->minX && $vector3->x !== $worldBorder->maxX) {
-            if ($vector3->z === $worldBorder->minZ) {
-                if (isset($this->servers[World::chunkHash($this->serverSettings->getX(), $this->serverSettings->getZ() - 1)])) {
-                    return new DustParticle(new Color(0, 251, 0));
-                } else {
-                    return new DustParticle(new Color(251, 162, 0));
-                }
-            } else {
-                if (isset($this->servers[World::chunkHash($this->serverSettings->getX(), $this->serverSettings->getZ() + 1)])) {
-                    return new DustParticle(new Color(0, 251, 0));
-                } else {
-                    return new DustParticle(new Color(251, 162, 0));
-                }
-            }
-        } else if ($difZ > $worldSettings->getPlotSize() - 1 && $vector3->z !== $worldBorder->minZ && $vector3->z !== $worldBorder->maxZ) {
-            if ($vector3->x === $worldBorder->minX) {
-                if (isset($this->servers[World::chunkHash($this->serverSettings->getX() - 1, $this->serverSettings->getZ())])) {
-                    return new DustParticle(new Color(0, 251, 0));
-                } else {
-                    return new DustParticle(new Color(251, 162, 0));
-                }
-            } else {
-                if (isset($this->servers[World::chunkHash($this->serverSettings->getX() + 1, $this->serverSettings->getZ())])) {
-                    return new DustParticle(new Color(0, 251, 0));
-                } else {
-                    return new DustParticle(new Color(251, 162, 0));
-                }
-            }
-        }
-        return new DustParticle(new Color(130, 2, 150));
     }
 
     private function updateServerData() : void {
