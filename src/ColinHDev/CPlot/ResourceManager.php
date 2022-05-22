@@ -28,7 +28,7 @@ class ResourceManager {
 
         foreach (CPlot::getInstance()->getResources() as $path => $fileInfo) {
 			if(str_contains($path, "language") and strtolower($fileInfo->getExtension()) === "ini") {
-				CPlot::getInstance()->saveResource($path);
+				CPlot::getInstance()->saveResource($path, true);
 			}
         }
 
