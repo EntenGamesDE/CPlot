@@ -34,4 +34,16 @@ class CoordinateUtils {
         }
         return false;
     }
+
+    public static function isCoordinateOnPassway(int $coordinate, int $roadSize, int $plotSize) : bool {
+        $roadPlotLength = $roadSize + $plotSize;
+        $rasterCoordinate = self::getRasterCoordinate($coordinate, $roadPlotLength);
+        if ($rasterCoordinate >= ($roadSize - 1)) {
+            return false;
+        }
+        if ($rasterCoordinate < 1) {
+            return false;
+        }
+        return true;
+    }
 }
