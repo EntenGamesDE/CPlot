@@ -81,7 +81,7 @@ class ServerSettings {
         }
         $worldBorder = $this->getWorldBorder($worldName, $worldSettings);
         $roadPlotLength = $worldSettings->getRoadSize() + $worldSettings->getPlotSize();
-        $borderLength = ($roadPlotLength) * $this->worldSize + $worldSettings->getRoadSize();
+        $borderLength = $roadPlotLength * $this->worldSize;
         $x = $this->x * $borderLength;
         $z = $this->z * $borderLength;
         $this->worldPassways[$worldName] = [];
@@ -112,7 +112,7 @@ class ServerSettings {
                 ($z + $i * $roadPlotLength) + 1,
                 $worldBorder->minX,
                 World::Y_MAX,
-                ($x + $i * $roadPlotLength) + $worldSettings->getRoadSize() - 1
+                ($z + $i * $roadPlotLength) + $worldSettings->getRoadSize() - 1
             );
             $this->worldPassways[$worldName][Facing::EAST][] = new AxisAlignedBB(
                 $worldBorder->maxX,
@@ -120,7 +120,7 @@ class ServerSettings {
                 ($z + $i * $roadPlotLength) + 1,
                 $worldBorder->maxX,
                 World::Y_MAX,
-                ($x + $i * $roadPlotLength) + $worldSettings->getRoadSize() - 1
+                ($z + $i * $roadPlotLength) + $worldSettings->getRoadSize() - 1
             );
         }
         return $this->worldPassways[$worldName];
