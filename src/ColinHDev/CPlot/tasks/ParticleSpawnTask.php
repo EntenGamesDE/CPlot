@@ -9,11 +9,11 @@ use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\color\Color;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 use pocketmine\world\particle\DustParticle;
-use pocketmine\world\World;
 use pocketmine\world\WorldManager;
 use SOFe\AwaitGenerator\Await;
 
@@ -73,6 +73,57 @@ class ParticleSpawnTask extends Task {
                     }
                 }
             }
+            foreach ($this->serverSettings->getWorldPassways($worldName, $worldSettings) as $facing => $passways) {
+                $particle = isset($this->servers[$facing]) ? $this->existingServerParticle : $this->unknownServerParticle;
+                switch ($facing) {
+                    case Facing::NORTH:
+                        $minZ = $worldBorder->minZ;
+                        $maxZ = $minZ + 1;
+                        break;
+                    case Facing::SOUTH:
+                        $maxZ = $worldBorder->maxZ;
+                        $minZ = $maxZ - 1;
+                        break;
+                    case Facing::WEST:
+                        $minX = $worldBorder->minX;
+                        $maxX = $minX + 1;
+                        break;
+                    case Facing::EAST:
+                        $maxX = $worldBorder->maxX;
+                        $minX = $maxX - 1;
+                        break;
+                }
+                foreach ($passways as $passway) {
+                    switch ($facing) {
+                        case Facing::NORTH:
+                        case Facing::SOUTH:
+                            $minX = $passway->minX;
+                            $maxX = $passway->maxX;
+                            break;
+                        case Facing::WEST:
+                        case Facing::EAST:
+                            $minZ = $passway->minZ;
+                            $maxZ = $passway->maxZ;
+                            break;
+                    }
+                    foreach ($world->getPlayers() as $player) {
+                        $y = $player->getLocation()->y;
+                        $minY = $y - 5;
+                        $maxY = $y + 5;
+                        for ($i = 0; $i < 30; $i++) {
+                            $world->addParticle(
+                                new Vector3(
+                                    $minX + mt_rand(0, (int) (($maxX * 100) - ($minX * 100))) / 100,
+                                    $minY + mt_rand(0, (int) (($maxY * 100) - ($minY * 100))) / 100,
+                                    $minZ + mt_rand(0, (int) (($maxZ * 100) - ($minZ * 100))) / 100
+                                ),
+                                $particle,
+                                [$player]
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -83,19 +134,27 @@ class ParticleSpawnTask extends Task {
                 $serverZ = $this->serverSettings->getZ();
                 $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX + 1, $serverZ);
                 if (is_string($serverName)) {
-                    $this->servers[World::chunkHash($serverX + 1, $serverZ)] = $serverName;
+                    $this->servers[Facing::EAST] = $serverName;
+                } else {
+                    unset($this->servers[Facing::EAST]);
                 }
                 $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX - 1, $serverZ);
                 if (is_string($serverName)) {
-                    $this->servers[World::chunkHash($serverX - 1, $serverZ)] = $serverName;
+                    $this->servers[Facing::WEST] = $serverName;
+                } else {
+                    unset($this->servers[Facing::WEST]);
                 }
                 $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ + 1);
                 if (is_string($serverName)) {
-                    $this->servers[World::chunkHash($serverX, $serverZ + 1)] = $serverName;
+                    $this->servers[Facing::SOUTH] = $serverName;
+                } else {
+                    unset($this->servers[Facing::SOUTH]);
                 }
                 $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ - 1);
                 if (is_string($serverName)) {
-                    $this->servers[World::chunkHash($serverX, $serverZ - 1)] = $serverName;
+                    $this->servers[Facing::NORTH] = $serverName;
+                } else {
+                    unset($this->servers[Facing::NORTH]);
                 }
             }
         );
