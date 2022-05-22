@@ -43,6 +43,14 @@ class ParticleSpawnTask extends Task {
             $this->serverSettings = ServerSettings::getInstance();
             $this->updateServerData();
         }
+        static $taskRunCounter = 0;
+        $taskRunCounter++;
+        // updateServerData() is called after every 240 times this task is run, so it is called about once per minute
+        // since the task runs every 0.25 seconds.
+        if ($taskRunCounter >= 240) {
+            $taskRunCounter = 0;
+            $this->updateServerData();
+        }
         foreach ($this->worldManager->getWorlds() as $world) {
             $worldName = $world->getFolderName();
             $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
