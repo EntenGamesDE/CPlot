@@ -11,6 +11,8 @@ use ColinHDev\CPlot\event\PlayerEnteredPlotEvent;
 use ColinHDev\CPlot\event\PlayerEnterPlotEvent;
 use ColinHDev\CPlot\event\PlayerLeavePlotEvent;
 use ColinHDev\CPlot\event\PlayerLeftPlotEvent;
+use ColinHDev\CPlot\math\CoordinateUtils;
+use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\player\settings\SettingIDs;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
@@ -21,6 +23,7 @@ use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use SOFe\AwaitGenerator\Await;
@@ -35,14 +38,48 @@ class PlayerMoveListener implements Listener {
             return;
         }
 
+        $player = $event->getPlayer();
         $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
         if (!$worldBorder->isVectorInXZ($to)) {
+            do {
+                $serversAround = ServerSettings::getInstance()->getServersAround();
+                if ($to->x < $worldBorder->minX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::WEST] ?? null;
+                    $x = $worldBorder->minX + $worldSettings->getRoadSize() / 4;
+                    $z = $to->z;
+                } else if ($to->x > $worldBorder->maxX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::EAST] ?? null;
+                    $x = $worldBorder->maxX - $worldSettings->getRoadSize() / 4;
+                    $z = $to->z;
+                } else if ($to->z < $worldBorder->minZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::NORTH] ?? null;
+                    $x = $to->x;
+                    $z = $worldBorder->minZ + $worldSettings->getRoadSize() / 4;
+                } else if ($to->z > $worldBorder->maxZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::SOUTH] ?? null;
+                    $x = $to->x;
+                    $z = $worldBorder->maxZ - $worldSettings->getRoadSize() / 4;
+                } else {
+                    break;
+                }
+                if (is_string($serverName)) {
+                    $packet = CPlotTeleportPacket::createFromCoordinates(
+                        $player->getName(), $serverName, $worldName,
+                        $x, $to->y, $z,
+                        $to->yaw, $to->pitch
+                    );
+                    $packet->send();
+                    $player->sendMessage("teleport soon");
+                } else {
+                    $player->sendMessage("no teleporto");
+                }
+            } while (false);
             $from = $event->getFrom();
             if ($worldBorder->isVectorInXZ($from)) {
                 $oppositeMoveDirection = $from->subtractVector($to);
-                $event->getPlayer()->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
+                $player->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
             } else if (!($worldBorder->expand(1.0, 0.0, 1.0)->isVectorInXZ($from))) {
-                $event->getPlayer()->teleport(new Vector3(
+                $player->teleport(new Vector3(
                     min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
                     $to->y,
                     min(max($to->z, $worldBorder->minZ), $worldBorder->maxZ)
@@ -59,8 +96,6 @@ class PlayerMoveListener implements Listener {
             );
             return;
         }
-
-        $player = $event->getPlayer();
 
         if ($plotTo instanceof Plot) {
             if ($plotFrom === null) {
