@@ -53,7 +53,7 @@ class ParticleSpawnTask extends Task {
             $worldBorder = $this->serverSettings->getWorldBorder($worldName, $worldSettings);
             foreach ($world->getPlayers() as $player) {
                 $location = $player->getLocation();
-                $sphere = new Sphere($location->x, $location->y, $location->z, 15.0, 15.0, 15.0);
+                $sphere = new Sphere($location->x, $location->y, $location->z, 10.0, 10.0, 10.0);
                 foreach (
                     [
                         $sphere->getXIntersection($worldBorder->minX),
@@ -127,8 +127,8 @@ class ParticleSpawnTask extends Task {
                     }
                     foreach ($world->getPlayers() as $player) {
                         $y = $player->getLocation()->y;
-                        $minY = $y - 5;
-                        $maxY = $y + 5;
+                        $minY = $y - 10;
+                        $maxY = $y + 10;
                         for ($i = 0; $i < 30; $i++) {
                             $world->addParticle(
                                 new Vector3(
