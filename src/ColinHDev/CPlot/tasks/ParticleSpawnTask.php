@@ -14,6 +14,7 @@ use pocketmine\math\Vector3;
 use pocketmine\scheduler\Task;
 use pocketmine\Server;
 use pocketmine\world\particle\DustParticle;
+use pocketmine\world\World;
 use pocketmine\world\WorldManager;
 use SOFe\AwaitGenerator\Await;
 
@@ -65,7 +66,7 @@ class ParticleSpawnTask extends Task {
                     } else if ($particleSpawn instanceof Sphere) {
                         /** @var Vector3 $point */
                         foreach ($particleSpawn->getPoints() as $point) {
-                            if ($point->x < $worldBorder->minX || $point->x > $worldBorder->maxX || $point->z < $worldBorder->minZ || $point->z > $worldBorder->maxZ) {
+                            if ($point->x < $worldBorder->minX || $point->x > $worldBorder->maxX || $point->y < World::Y_MIN || $point->y >= World::Y_MAX || $point->z < $worldBorder->minZ || $point->z > $worldBorder->maxZ) {
                                 continue;
                             }
                             $world->addParticle($point, $this->borderParticle, [$player]);
