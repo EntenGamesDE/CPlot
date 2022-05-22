@@ -75,7 +75,7 @@ class ParticleSpawnTask extends Task {
                             } else {
                                 $difX = abs(($x - $worldSettings->getPlotSize() + 1) % ($worldSettings->getPlotSize() + $worldSettings->getRoadSize()));
                             }
-                            if ($difX > $worldSettings->getPlotSize() - 1 && $point->x !== $worldBorder->minX && $point->x !== $worldBorder->maxX) {
+                            if ($difX > $worldSettings->getPlotSize() && $point->x !== $worldBorder->minX && $point->x !== $worldBorder->maxX) {
                                 continue;
                             }
                             $z = $point->getFloorZ() - $worldSettings->getRoadSize();
@@ -84,7 +84,7 @@ class ParticleSpawnTask extends Task {
                             } else {
                                 $difZ = abs(($z - $worldSettings->getPlotSize() + 1) % ($worldSettings->getPlotSize() + $worldSettings->getRoadSize()));
                             }
-                            if ($difZ > $worldSettings->getPlotSize() - 1 && $point->z !== $worldBorder->minZ && $point->z !== $worldBorder->maxZ) {
+                            if ($difZ > $worldSettings->getPlotSize() && $point->z !== $worldBorder->minZ && $point->z !== $worldBorder->maxZ) {
                                 continue;
                             }
                             $world->addParticle($point, $this->borderParticle, [$player]);
