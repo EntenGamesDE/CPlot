@@ -71,9 +71,9 @@ class PlayerMoveListener implements Listener {
                             $to->yaw, $to->pitch
                         );
                         $packet->send();
-                        LanguageManager::getInstance()->getProvider()->sendMessage($player, "player.move.serverTransfer.teleportSoon");
+                        LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.teleportSoon"]);
                     } else {
-                        LanguageManager::getInstance()->getProvider()->sendMessage($player, "player.move.serverTransfer.serverNotFound");
+                        LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.serverNotFound"]);
                     }
                 } while (false);
                 $oppositeMoveDirection = $from->subtractVector($to);
