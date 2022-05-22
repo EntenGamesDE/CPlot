@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace ColinHDev\CPlot;
 
 use ColinHDev\CPlot\plots\BasePlot;
+use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
+use SOFe\AwaitGenerator\Await;
 
 class ServerSettings {
     use SingletonTrait;
@@ -22,6 +24,8 @@ class ServerSettings {
     private array $worldAABBs = [];
     /** @phpstan-var array<string, array<int, AxisAlignedBB[]>> */
     private array $worldPassways = [];
+    /** @phpstan-var array<int, string> */
+    private array $serversAround = [];
 
     public function __construct(string $name, int $x, int $z) {
         $this->name = $name;
@@ -120,5 +124,46 @@ class ServerSettings {
             );
         }
         return $this->worldPassways[$worldName];
+    }
+
+    /**
+     *
+     * @return array<int, string>
+     */
+    public function getServersAround() : array {
+        return $this->serversAround;
+    }
+
+    public function updateServerData() : void {
+        Await::f2c(
+            function() : \Generator {
+                $serverX = $this->getX();
+                $serverZ = $this->getZ();
+                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX + 1, $serverZ);
+                if (is_string($serverName)) {
+                    $this->serversAround[Facing::EAST] = $serverName;
+                } else {
+                    unset($this->serversAround[Facing::EAST]);
+                }
+                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX - 1, $serverZ);
+                if (is_string($serverName)) {
+                    $this->serversAround[Facing::WEST] = $serverName;
+                } else {
+                    unset($this->serversAround[Facing::WEST]);
+                }
+                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ + 1);
+                if (is_string($serverName)) {
+                    $this->serversAround[Facing::SOUTH] = $serverName;
+                } else {
+                    unset($this->serversAround[Facing::SOUTH]);
+                }
+                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ - 1);
+                if (is_string($serverName)) {
+                    $this->serversAround[Facing::NORTH] = $serverName;
+                } else {
+                    unset($this->serversAround[Facing::NORTH]);
+                }
+            }
+        );
     }
 }

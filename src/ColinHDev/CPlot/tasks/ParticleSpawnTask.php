@@ -16,14 +16,11 @@ use pocketmine\Server;
 use pocketmine\world\particle\DustParticle;
 use pocketmine\world\World;
 use pocketmine\world\WorldManager;
-use SOFe\AwaitGenerator\Await;
 
 class ParticleSpawnTask extends Task {
 
     private WorldManager $worldManager;
     private ServerSettings $serverSettings;
-    /** @phpstan-var array<int, string> */
-    private array $servers = [];
     private DustParticle $borderParticle;
     private DustParticle $existingServerParticle;
     private DustParticle $unknownServerParticle;
@@ -41,7 +38,7 @@ class ParticleSpawnTask extends Task {
         }
         if (!isset($this->serverSettings)) {
             $this->serverSettings = ServerSettings::getInstance();
-            $this->updateServerData();
+            $this->serverSettings->updateServerData();
         }
         static $taskRunCounter = 0;
         $taskRunCounter++;
@@ -49,8 +46,9 @@ class ParticleSpawnTask extends Task {
         // since the task runs every 0.25 seconds.
         if ($taskRunCounter >= 240) {
             $taskRunCounter = 0;
-            $this->updateServerData();
+            $this->serverSettings->updateServerData();
         }
+        $serversAround = $this->serverSettings->getServersAround();
         foreach ($this->worldManager->getWorlds() as $world) {
             $worldName = $world->getFolderName();
             $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
@@ -101,7 +99,7 @@ class ParticleSpawnTask extends Task {
                 }
             }
             foreach ($this->serverSettings->getWorldPassways($worldName, $worldSettings) as $facing => $passways) {
-                $particle = isset($this->servers[$facing]) ? $this->existingServerParticle : $this->unknownServerParticle;
+                $particle = isset($serversAround[$facing]) ? $this->existingServerParticle : $this->unknownServerParticle;
                 switch ($facing) {
                     case Facing::NORTH:
                         $minZ = $worldBorder->minZ;
@@ -152,38 +150,5 @@ class ParticleSpawnTask extends Task {
                 }
             }
         }
-    }
-
-    private function updateServerData() : void {
-        Await::f2c(
-            function() : \Generator {
-                $serverX = $this->serverSettings->getX();
-                $serverZ = $this->serverSettings->getZ();
-                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX + 1, $serverZ);
-                if (is_string($serverName)) {
-                    $this->servers[Facing::EAST] = $serverName;
-                } else {
-                    unset($this->servers[Facing::EAST]);
-                }
-                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX - 1, $serverZ);
-                if (is_string($serverName)) {
-                    $this->servers[Facing::WEST] = $serverName;
-                } else {
-                    unset($this->servers[Facing::WEST]);
-                }
-                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ + 1);
-                if (is_string($serverName)) {
-                    $this->servers[Facing::SOUTH] = $serverName;
-                } else {
-                    unset($this->servers[Facing::SOUTH]);
-                }
-                $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ - 1);
-                if (is_string($serverName)) {
-                    $this->servers[Facing::NORTH] = $serverName;
-                } else {
-                    unset($this->servers[Facing::NORTH]);
-                }
-            }
-        );
     }
 }
