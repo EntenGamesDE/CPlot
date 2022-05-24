@@ -45,6 +45,10 @@ class ClearSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "clear.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "clear.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$sender->hasPermission("cplot.admin.clear")) {
             if (!$plot->hasPlotOwner()) {

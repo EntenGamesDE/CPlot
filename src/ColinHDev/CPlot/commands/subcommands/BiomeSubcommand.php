@@ -83,6 +83,10 @@ class BiomeSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "biome.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "biome.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$sender->hasPermission("cplot.admin.biome")) {
             if (!$plot->hasPlotOwner()) {

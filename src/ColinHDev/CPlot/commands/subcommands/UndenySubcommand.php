@@ -69,6 +69,10 @@ class UndenySubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "undeny.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "undeny.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$plot->hasPlotOwner()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "undeny.noPlotOwner"]);

@@ -83,7 +83,11 @@ class WarpSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "warp.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
             return null;
         }
-        yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "warp.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+        if ($plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "warp.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+        } else {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "warp.success.plotNotOnServer" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+        }
         return null;
     }
 }

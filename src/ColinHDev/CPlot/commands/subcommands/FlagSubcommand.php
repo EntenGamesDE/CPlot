@@ -95,6 +95,10 @@ class FlagSubcommand extends Subcommand {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.here.noPlot"]);
                     break;
                 }
+                if (!$plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.here.plotNotOnServer"]);
+                    return null;
+                }
                 $flags = $plot->getFlags();
                 if (count($flags) === 0) {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.here.noFlags"]);
@@ -134,6 +138,10 @@ class FlagSubcommand extends Subcommand {
                 if (!($plot instanceof Plot)) {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.set.noPlot"]);
                     break;
+                }
+                if (!$plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.set.plotNotOnServer"]);
+                    return null;
                 }
 
                 if (!$plot->hasPlotOwner()) {
@@ -257,6 +265,10 @@ class FlagSubcommand extends Subcommand {
                 if (!($plot instanceof Plot)) {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.remove.noPlot"]);
                     break;
+                }
+                if (!$plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "flag.remove.plotNotOnServer"]);
+                    return null;
                 }
 
                 if (!$plot->hasPlotOwner()) {

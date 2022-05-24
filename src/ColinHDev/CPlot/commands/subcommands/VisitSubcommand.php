@@ -43,7 +43,11 @@ class VisitSubcommand extends Subcommand {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.noArguments.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
                     return null;
                 }
-                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.noArguments.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                if ($plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.noArguments.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                } else {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.noArguments.success.plotNotOnServer" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                }
                 return null;
 
             case 1:
@@ -69,7 +73,11 @@ class VisitSubcommand extends Subcommand {
                         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.sender.teleportError" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
                         return null;
                     }
-                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.sender.success" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                    if ($plot->isOnServer()) {
+                        yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.sender.success" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                    } else {
+                        yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.sender.success.plotNotOnServer" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                    }
                     return null;
                 }
 
@@ -98,7 +106,11 @@ class VisitSubcommand extends Subcommand {
                         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.player.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
                         return null;
                     }
-                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.player.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                    if ($plot->isOnServer()) {
+                        yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.player.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                    } else {
+                        yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.player.success.plotNotOnServer" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                    }
                     return null;
                 }
 
@@ -113,7 +125,12 @@ class VisitSubcommand extends Subcommand {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.alias.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $alias]]);
                     return null;
                 }
-                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.alias.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $alias]]);
+                if ($plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.alias.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $alias]]);
+                } else {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.oneArgument.alias.success.plotNotOnServer" => [$plot->getWorldName(), $plot->getX(), $plot->getZ(), $alias]]);
+
+                }
                 return null;
 
             default:
@@ -149,7 +166,11 @@ class VisitSubcommand extends Subcommand {
                     yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.twoArguments.teleportError" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
                     return null;
                 }
-                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.twoArguments.success" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                if ($plot->isOnServer()) {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.twoArguments.success" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                } else {
+                    yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "visit.twoArguments.success.plotNotOnServer" => [$plotNumber, $plot->getWorldName(), $plot->getX(), $plot->getZ(), $playerName]]);
+                }
         }
         return null;
     }

@@ -69,6 +69,10 @@ class RemoveSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "remove.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "remove.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$plot->hasPlotOwner()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "remove.noPlotOwner"]);

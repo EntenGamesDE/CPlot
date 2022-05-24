@@ -33,6 +33,10 @@ class DeniedSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "denied.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "denied.plotNotOnServer"]);
+            return null;
+        }
 
         $deniedPlayerData = [];
         foreach ($plot->getPlotDenied() as $plotPlayer) {

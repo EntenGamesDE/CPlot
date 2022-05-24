@@ -107,6 +107,11 @@ class BorderSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "border.noPlot"]);
             return;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "border.plotNotOnServer"]);
+            return null;
+        }
+
         if (!$player->hasPermission("cplot.admin.border")) {
             if (!$plot->hasPlotOwner()) {
                 yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "border.noPlotOwner"]);

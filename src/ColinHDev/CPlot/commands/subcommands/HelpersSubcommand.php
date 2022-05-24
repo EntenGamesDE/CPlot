@@ -33,6 +33,10 @@ class HelpersSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "helpers.plotNotOnServer"]);
+            return null;
+        }
 
         $helperData = [];
         foreach ($plot->getPlotHelpers() as $plotPlayer) {

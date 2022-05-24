@@ -53,6 +53,10 @@ class MergeSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "merge.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "merge.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$plot->hasPlotOwner()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "merge.noPlotOwner"]);
@@ -97,6 +101,10 @@ class MergeSubcommand extends Subcommand {
         }
         if ($plot->isSame($plotToMerge)) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "merge.alreadyMerged"]);
+            return null;
+        }
+        if (!$plotToMerge->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "add.secondPlotNotOnServer"]);
             return null;
         }
 

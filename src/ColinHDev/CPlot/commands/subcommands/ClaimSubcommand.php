@@ -40,6 +40,10 @@ class ClaimSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "claim.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "claim.plotNotOnServer"]);
+            return null;
+        }
 
         if ($plot->hasPlotOwner()) {
             if ($plot->isPlotOwner($sender)) {

@@ -33,6 +33,10 @@ class TrustedSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "trusted.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "trusted.plotNotOnServer"]);
+            return null;
+        }
 
         $trustedPlayerData = [];
         foreach ($plot->getPlotTrusted() as $plotPlayer) {

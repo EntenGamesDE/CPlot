@@ -34,6 +34,10 @@ class InfoSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "info.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "info.plotNotOnServer"]);
+            return null;
+        }
 
         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "info.plot" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
 

@@ -43,6 +43,10 @@ class ResetSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "reset.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "reset.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$sender->hasPermission("cplot.admin.reset")) {
             if (!$plot->hasPlotOwner()) {

@@ -74,6 +74,10 @@ class AddSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "add.noPlot"]);
             return null;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "add.plotNotOnServer"]);
+            return null;
+        }
 
         if (!$plot->hasPlotOwner()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "add.noPlotOwner"]);

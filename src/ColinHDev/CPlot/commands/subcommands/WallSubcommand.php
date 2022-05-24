@@ -107,6 +107,11 @@ class WallSubcommand extends Subcommand {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "wall.noPlot"]);
             return;
         }
+        if (!$plot->isOnServer()) {
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "wall.plotNotOnServer"]);
+            return null;
+        }
+
         if (!$player->hasPermission("cplot.admin.wall")) {
             if (!$plot->hasPlotOwner()) {
                 yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "wall.noPlotOwner"]);
