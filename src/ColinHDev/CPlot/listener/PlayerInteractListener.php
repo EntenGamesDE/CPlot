@@ -11,6 +11,7 @@ use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\block\Block;
 use pocketmine\block\Door;
@@ -28,13 +29,19 @@ class PlayerInteractListener implements Listener {
         }
 
         $position = $event->getBlock()->getPosition();
-        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($position->getWorld()->getFolderName());
+        $worldName = $position->getWorld()->getFolderName();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
         if ($worldSettings === null) {
             LanguageManager::getInstance()->getProvider()->sendMessage($event->getPlayer(), ["prefix", "player.interact.worldNotLoaded"]);
             $event->cancel();
             return;
         }
         if (!$worldSettings instanceof WorldSettings) {
+            return;
+        }
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        if (!$worldBorder->isVectorInside($position->asVector3())) {
+            $event->cancel();
             return;
         }
 

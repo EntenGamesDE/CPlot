@@ -37,6 +37,10 @@ class StructureGrowListener implements Listener {
             $event->cancel();
             return;
         }
+        if (!$plot->isOnServer()) {
+            $event->cancel();
+            return;
+        }
         if ($plot instanceof Plot) {
             /** @var BooleanAttribute $flag */
             $flag = $plot->getFlagNonNullByID(FlagIDs::FLAG_GROWING);

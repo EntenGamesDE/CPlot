@@ -8,6 +8,7 @@ use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\event\Listener;
@@ -27,13 +28,19 @@ class EntityTrampleFarmlandListener implements Listener {
         }
 
         $position = $event->getBlock()->getPosition();
-        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($position->getWorld()->getFolderName());
+        $worldName = $position->getWorld()->getFolderName();
+        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
         if ($worldSettings === null) {
             LanguageManager::getInstance()->getProvider()->sendMessage($entity, ["prefix", "player.interact.worldNotLoaded"]);
             $event->cancel();
             return;
         }
         if (!$worldSettings instanceof WorldSettings) {
+            return;
+        }
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        if (!$worldBorder->isVectorInside($position->asVector3())) {
+            $event->cancel();
             return;
         }
 
