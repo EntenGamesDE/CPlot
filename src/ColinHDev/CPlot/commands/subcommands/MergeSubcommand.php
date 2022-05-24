@@ -104,7 +104,7 @@ class MergeSubcommand extends Subcommand {
             return null;
         }
         if (!$plotToMerge->isOnServer()) {
-            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "add.secondPlotNotOnServer"]);
+            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "merge.secondPlotNotOnServer"]);
             return null;
         }
 
