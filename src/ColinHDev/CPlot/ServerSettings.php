@@ -9,6 +9,7 @@ use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 use SOFe\AwaitGenerator\Await;
@@ -20,6 +21,8 @@ class ServerSettings {
     private int $worldSize = 13;
     private int $x;
     private int $z;
+    /** @phpstan-var array<string, Vector3> */
+    private array $worldMiddles = [];
     /** @phpstan-var array<string, AxisAlignedBB> */
     private array $worldAABBs = [];
     /** @phpstan-var array<string, array<int, AxisAlignedBB[]>> */
@@ -47,6 +50,21 @@ class ServerSettings {
 
     public function getZ() : int {
         return $this->z;
+    }
+
+    public function getWorldMiddle(string $worldName, WorldSettings $worldSettings) : Vector3 {
+        if (isset($this->worldMiddles[$worldName])) {
+            return clone $this->worldMiddles[$worldName];
+        }
+        $alignPlot = new BasePlot($worldName, $worldSettings, $this->x * $this->worldSize, $this->z * $this->worldSize);
+        $alignPlotPosition = $alignPlot->getVector3();
+        $borderLength = ($worldSettings->getPlotSize() + $worldSettings->getRoadSize()) * $this->worldSize + $worldSettings->getRoadSize();
+        $distanceToBorderFromMiddle = $borderLength / 2;
+        $serverMiddleX = ($alignPlotPosition->x - $worldSettings->getRoadSize()) + $distanceToBorderFromMiddle;
+        $serverMiddleZ = ($alignPlotPosition->z - $worldSettings->getRoadSize()) + $distanceToBorderFromMiddle;
+        $worldMiddle = new Vector3($serverMiddleX, $alignPlotPosition->y, $serverMiddleZ);
+        $this->worldMiddles[$worldName] = $worldMiddle;
+        return clone $worldMiddle;
     }
 
     public function getWorldBorder(string $worldName, WorldSettings $worldSettings) : AxisAlignedBB {

@@ -43,42 +43,45 @@ class PlayerMoveListener implements Listener {
         if (!$worldBorder->isVectorInXZ($to)) {
             $from = $event->getFrom();
             if ($worldBorder->isVectorInXZ($from)) {
-                do {
-                    $serversAround = ServerSettings::getInstance()->getServersAround();
-                    if ($to->x < $worldBorder->minX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
-                        $serverName = $serversAround[Facing::WEST] ?? null;
-                        $x = $worldBorder->minX + $worldSettings->getRoadSize() / 4;
-                        $z = $to->z;
-                    } else if ($to->x > $worldBorder->maxX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
-                        $serverName = $serversAround[Facing::EAST] ?? null;
-                        $x = $worldBorder->maxX - $worldSettings->getRoadSize() / 4;
-                        $z = $to->z;
-                    } else if ($to->z < $worldBorder->minZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
-                        $serverName = $serversAround[Facing::NORTH] ?? null;
-                        $x = $to->x;
-                        $z = $worldBorder->minZ + $worldSettings->getRoadSize() / 4;
-                    } else if ($to->z > $worldBorder->maxZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
-                        $serverName = $serversAround[Facing::SOUTH] ?? null;
-                        $x = $to->x;
-                        $z = $worldBorder->maxZ - $worldSettings->getRoadSize() / 4;
-                    } else {
-                        break;
-                    }
-                    if (is_string($serverName)) {
-                        $packet = CPlotTeleportPacket::createFromCoordinates(
-                            $player->getName(), $serverName, $worldName,
-                            $x, $to->y, $z,
-                            $to->yaw, $to->pitch
-                        );
-                        $packet->send();
-                        LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.teleportSoon"]);
-                    } else {
-                        LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.serverNotFound"]);
-                    }
-                } while (false);
-                $oppositeMoveDirection = $from->subtractVector($to);
-                $player->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
-            } else if (!($worldBorder->expand(1.0, 0.0, 1.0)->isVectorInXZ($from))) {
+                $serversAround = ServerSettings::getInstance()->getServersAround();
+                if ($to->x < $worldBorder->minX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::WEST] ?? null;
+                    $x = $worldBorder->minX + $worldSettings->getRoadSize() / 4;
+                    $z = $to->z;
+                } else if ($to->x > $worldBorder->maxX && CoordinateUtils::isCoordinateOnPassway($to->getFloorZ(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::EAST] ?? null;
+                    $x = $worldBorder->maxX - $worldSettings->getRoadSize() / 4;
+                    $z = $to->z;
+                } else if ($to->z < $worldBorder->minZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::NORTH] ?? null;
+                    $x = $to->x;
+                    $z = $worldBorder->minZ + $worldSettings->getRoadSize() / 4;
+                } else if ($to->z > $worldBorder->maxZ && CoordinateUtils::isCoordinateOnPassway($to->getFloorX(), $worldSettings->getRoadSize(), $worldSettings->getPlotSize())) {
+                    $serverName = $serversAround[Facing::SOUTH] ?? null;
+                    $x = $to->x;
+                    $z = $worldBorder->maxZ - $worldSettings->getRoadSize() / 4;
+                } else {
+                    $oppositeMoveDirection = $from->subtractVector($to);
+                    $player->knockBack($oppositeMoveDirection->x, $oppositeMoveDirection->z, 0.6);
+                    return;
+                }
+                if (is_string($serverName)) {
+                    $packet = CPlotTeleportPacket::createFromCoordinates(
+                        $player->getName(), $serverName, $worldName,
+                        $x, $to->y, $z,
+                        $to->yaw, $to->pitch
+                    );
+                    $packet->send();
+                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.teleportSoon"]);
+                } else {
+                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.serverNotFound"]);
+                }
+                $worldMiddle = ServerSettings::getInstance()->getWorldMiddle($worldName, $worldSettings);
+                $toWorldMiddle = $worldMiddle->subtractVector($to);
+                $player->knockBack($toWorldMiddle->x, $toWorldMiddle->z, 0.6);
+                return;
+            }
+            if (!($worldBorder->expand(1.0, 0.0, 1.0)->isVectorInXZ($from))) {
                 $player->teleport(new Vector3(
                     min(max($to->x, $worldBorder->minX), $worldBorder->maxX),
                     $to->y,
