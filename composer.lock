@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5aa5f8bcdfd943d248eba821954a9fc0",
+    "content-hash": "f8bac834ab851c710b7c26a9720382fa",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -168,13 +168,32 @@
         },
         {
             "name": "entengamesde/cloudbridge",
-            "version": "1.0.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/EntenGamesDE/CloudBridge",
-                "reference": "pm4"
+                "url": "git@github.com:EntenGamesDE/CloudBridge.git",
+                "reference": "9322c5f1acee3c8d1c68f8e24b8372ae4affa8b7"
             },
-            "type": "library"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EntenGamesDE/CloudBridge/zipball/9322c5f1acee3c8d1c68f8e24b8372ae4affa8b7",
+                "reference": "9322c5f1acee3c8d1c68f8e24b8372ae4affa8b7",
+                "shasum": ""
+            },
+            "require": {
+                "entengamesde/managersystem": "^2.1.0",
+                "nethergamesmc/bedrock-data": "dev-master",
+                "nethergamesmc/bedrock-protocol": "dev-master",
+                "pocketmine/pocketmine-mp": "4.0.0"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.6.7",
+                "phpstan/phpstan-strict-rules": "^1.2.3"
+            },
+            "default-branch": true,
+            "type": "library",
+            "time": "2022-05-31T19:55:06+00:00"
         },
         {
             "name": "entengamesde/managersystem",
@@ -1312,17 +1331,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SOF3/await-std.git",
-                "reference": "b7af914eaecc0244fc71835eb08f0669b60c997a"
+                "reference": "6abd0dc7c509545eafefd38c30729467c4a647e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SOF3/await-std/zipball/b7af914eaecc0244fc71835eb08f0669b60c997a",
-                "reference": "b7af914eaecc0244fc71835eb08f0669b60c997a",
+                "url": "https://api.github.com/repos/SOF3/await-std/zipball/6abd0dc7c509545eafefd38c30729467c4a647e0",
+                "reference": "6abd0dc7c509545eafefd38c30729467c4a647e0",
                 "shasum": ""
             },
             "require": {
                 "pocketmine/pocketmine-mp": "^4.0.0",
-                "sof3/await-generator": "^3.1.1"
+                "sof3/await-generator": "^3.3.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^0.12.84"
@@ -1343,7 +1362,7 @@
                 "issues": "https://github.com/SOF3/await-std/issues",
                 "source": "https://github.com/SOF3/await-std/tree/master"
             },
-            "time": "2022-04-12T00:08:28+00:00"
+            "time": "2022-05-27T05:10:08+00:00"
         },
         {
             "name": "sof3/infoapi",
@@ -1387,16 +1406,16 @@
         },
         {
             "name": "sof3/libasynql",
-            "version": "v4.0.1",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/poggit/libasynql.git",
-                "reference": "a7e844e409166601152347f0acfd91608e93eee4"
+                "reference": "a55ecceb73e6aa99b80bbec2a78aed0c6341170c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/poggit/libasynql/zipball/a7e844e409166601152347f0acfd91608e93eee4",
-                "reference": "a7e844e409166601152347f0acfd91608e93eee4",
+                "url": "https://api.github.com/repos/poggit/libasynql/zipball/a55ecceb73e6aa99b80bbec2a78aed0c6341170c",
+                "reference": "a55ecceb73e6aa99b80bbec2a78aed0c6341170c",
                 "shasum": ""
             },
             "require": {
@@ -1420,22 +1439,22 @@
             ],
             "support": {
                 "issues": "https://github.com/poggit/libasynql/issues",
-                "source": "https://github.com/poggit/libasynql/tree/v4.0.1"
+                "source": "https://github.com/poggit/libasynql/tree/4.1.0"
             },
-            "time": "2021-12-17T16:15:41+00:00"
+            "time": "2022-05-25T15:45:58+00:00"
         },
         {
             "name": "sof3/rwlock",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SOF3/rwlock.php.git",
-                "reference": "79c7593810ee830a076a169b173d8e48dc391465"
+                "reference": "7f9b59e488326619e9b24a39620ce747618362b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SOF3/rwlock.php/zipball/79c7593810ee830a076a169b173d8e48dc391465",
-                "reference": "79c7593810ee830a076a169b173d8e48dc391465",
+                "url": "https://api.github.com/repos/SOF3/rwlock.php/zipball/7f9b59e488326619e9b24a39620ce747618362b9",
+                "reference": "7f9b59e488326619e9b24a39620ce747618362b9",
                 "shasum": ""
             },
             "require": {
@@ -1464,9 +1483,9 @@
             "description": "Exclusive and Read-write locks for PHP",
             "support": {
                 "issues": "https://github.com/SOF3/rwlock.php/issues",
-                "source": "https://github.com/SOF3/rwlock.php/tree/0.1.0"
+                "source": "https://github.com/SOF3/rwlock.php/tree/0.1.1"
             },
-            "time": "2021-12-19T05:29:12+00:00"
+            "time": "2022-03-05T13:06:31+00:00"
         },
         {
             "name": "sofe/capital",
@@ -1831,16 +1850,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.6.8",
+            "version": "1.7.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "d76498c5531232cb8386ceb6004f7e013138d3ba"
+                "reference": "cadad14ac63d8a432e01ae89ac5d0ff6fc3b16ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d76498c5531232cb8386ceb6004f7e013138d3ba",
-                "reference": "d76498c5531232cb8386ceb6004f7e013138d3ba",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cadad14ac63d8a432e01ae89ac5d0ff6fc3b16ab",
+                "reference": "cadad14ac63d8a432e01ae89ac5d0ff6fc3b16ab",
                 "shasum": ""
             },
             "require": {
@@ -1866,7 +1885,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.6.8"
+                "source": "https://github.com/phpstan/phpstan/tree/1.7.7"
             },
             "funding": [
                 {
@@ -1886,7 +1905,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-05-10T06:54:21+00:00"
+            "time": "2022-05-31T13:58:21+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -1942,7 +1961,8 @@
     "stability-flags": {
         "nethergamesmc/bedrock-data": 20,
         "nethergamesmc/bedrock-protocol": 20,
-        "sof3/await-std": 20
+        "sof3/await-std": 20,
+        "entengamesde/cloudbridge": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

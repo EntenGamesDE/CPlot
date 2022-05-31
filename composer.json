@@ -10,7 +10,7 @@
     "sof3/await-std": "@dev",
     "cooldogedev/bedrockeconomy": "^2.0.8",
     "colinhdev/libasyncevent": "^1.0.0",
-    "entengamesde/cloudbridge": "^1.0.0",
+    "entengamesde/cloudbridge": "dev-main",
     "entengamesde/managersystem": "^2.1.0"
   },
   "require-dev": {
@@ -44,16 +44,8 @@
       }
     },
     "cloudbridge": {
-      "type": "package",
-      "package": {
-        "name": "entengamesde/cloudbridge",
-        "version": "1.0.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/EntenGamesDE/CloudBridge",
-          "reference": "pm4"
-        }
-      }
+      "type": "vcs",
+      "url":  "git@github.com:EntenGamesDE/CloudBridge.git"
     },
     "managersystem": {
       "type": "package",
