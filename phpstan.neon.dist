@@ -10,16 +10,6 @@ parameters:
 	    - /vendor/cooldogedev/bedrockeconomy/src
 	    - /vendor/entengamesde/cloudbridge/src
 	    - /vendor/entengamesde/managersystem/src
-	ignoreErrors:
-		-
-			message: '#Call to an undefined method [a-zA-Z0-9\\_]+::asyncGeneric\(\)#'
-			path: src/ColinHDev/CPlot/provider/DataProvider.php
-		-
-			message: '#Call to an undefined method [a-zA-Z0-9\\_]+::asyncInsert\(\)#'
-			path: src/ColinHDev/CPlot/provider/DataProvider.php
-		-
-			message: '#Call to an undefined method [a-zA-Z0-9\\_]+::asyncSelect\(\)#'
-			path: src/ColinHDev/CPlot/provider/DataProvider.php
 
 includes:
 	- phpstan-baseline.neon

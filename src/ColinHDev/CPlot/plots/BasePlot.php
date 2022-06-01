@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace ColinHDev\CPlot\plots;
 
-use ColinHDev\CPlot\packet\CPlotTeleportPacket;
-use ColinHDev\CPlot\plots\flags\FlagIDs;
-use ColinHDev\CPlot\plots\flags\FlagManager;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\NonWorldSettings;
@@ -14,11 +11,9 @@ use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\entity\Location;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use SOFe\AwaitGenerator\Await;
 
 class BasePlot {
 
@@ -62,54 +57,38 @@ class BasePlot {
     }
 
     /**
+     * Returns a {@see Location} at the edge of the plot where a player could be teleported to.
      * @throws \RuntimeException when called outside of main thread.
      */
-    public function teleportTo(Player $player, bool $toPlotCenter = false) : bool {
-        $flag = FlagManager::getInstance()->getFlagByID(FlagIDs::FLAG_SPAWN);
-        $relativeSpawn = $flag?->getValue();
-        if ($relativeSpawn instanceof Location) {
-            $world = $this->getWorld();
-            if ($world === null) {
-                return false;
-            }
-            $serverSettings = ServerSettings::getInstance();
-            $worldSize = $serverSettings->getWorldSize();
-            $serverX = (int) floor($this->x / $worldSize);
-            $serverZ = (int) floor($this->z / $worldSize);
-            if ($serverX !== $serverSettings->getX() || $serverZ !== $serverSettings->getZ()) {
-                Await::f2c(
-                    static function() use($serverX, $serverZ) : \Generator {
-                        /** @phpstan-var string $serverName */
-                        $serverName = yield DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($serverX, $serverZ);
-                        return $serverName;
-                    },
-                    function(string $serverName) use($player, $relativeSpawn) : void {
-                        if (!($player->isConnected())) {
-                            return;
-                        }
-                        $spawn = $relativeSpawn->addVector($this->getVector3());
-                        $packet = CPlotTeleportPacket::createFromCoordinates(
-                            $player->getName(),
-                            $serverName,
-                            $this->worldName,
-                            $spawn->x, $spawn->y, $spawn->z,
-                            $relativeSpawn->yaw, $relativeSpawn->pitch
-                        );
-                        $packet->send();
-                    }
-                );
-                return true;
-            }
-            return $player->teleport(
-                Location::fromObject(
-                    $relativeSpawn->addVector($this->getVector3()),
-                    $world,
-                    $relativeSpawn->getYaw(),
-                    $relativeSpawn->getPitch()
-                )
-            );
-        }
-        return false;
+    public function getTeleportLocation() : Location {
+        return Location::fromObject(
+            $this->getVector3()->add(
+                $this->worldSettings->getPlotSize() / 2,
+                1,
+                0
+            ),
+            $this->getWorld(),
+            0,
+            0
+        );
+    }
+
+    /**
+     * Returns a {@see Location} at the center of the plot where a player could be teleported to.
+     * @throws \RuntimeException when called outside of main thread.
+     */
+    public function getCenterTeleportLocation() : Location {
+        $halfPlotSize = $this->worldSettings->getPlotSize() / 2;
+        return Location::fromObject(
+            $this->getVector3()->add(
+                $halfPlotSize,
+                1,
+                $halfPlotSize
+            ),
+            $this->getWorld(),
+            0,
+            0
+        );
     }
 
     public function getSide(int $side, int $step = 1) : ?self {
@@ -177,18 +156,12 @@ class BasePlot {
     }
 
     public function getVector3() : Vector3 {
-        return $this->getVector3NonNull(
-            $this->worldSettings->getRoadSize(),
-            $this->worldSettings->getPlotSize(),
-            $this->worldSettings->getGroundSize()
-        );
-    }
-
-    public function getVector3NonNull(int $sizeRoad, int $sizePlot, int $sizeGround) : Vector3 {
+        $roadSize = $this->worldSettings->getRoadSize();
+        $roadPlotSize = $roadSize + $this->worldSettings->getPlotSize();
         return new Vector3(
-            $sizeRoad + ($sizeRoad + $sizePlot) * $this->x,
-            $sizeGround,
-            $sizeRoad + ($sizeRoad + $sizePlot) * $this->z
+            $roadSize + $roadPlotSize * $this->x,
+            $this->worldSettings->getGroundSize(),
+            $roadSize + $roadPlotSize * $this->z
         );
     }
 
