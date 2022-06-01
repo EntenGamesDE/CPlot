@@ -126,14 +126,25 @@ class BasePlot {
     }
 
     /**
+     * Returns the X coordinate of the plot server this plot is on.
+     */
+    public function getServerX() : int {
+        return (int) floor($this->x / ServerSettings::getInstance()->getWorldSize());
+    }
+
+    /**
+     * Returns the Z coordinate of the plot server this plot is on.
+     */
+    public function getServerZ() : int {
+        return (int) floor($this->z / ServerSettings::getInstance()->getWorldSize());
+    }
+
+    /**
      * Returns TRUE if this plot is on this current plot server or FALSE if it is on another one.
      */
     public function isOnServer() : bool {
         $serverSettings = ServerSettings::getInstance();
-        $worldSize = $serverSettings->getWorldSize();
-        $serverX = (int) floor($this->x / $worldSize);
-        $serverZ = (int) floor($this->z / $worldSize);
-        return !($serverX !== $serverSettings->getX() || $serverZ !== $serverSettings->getZ());
+        return !($this->getServerX() !== $serverSettings->getX() || $this->getServerZ() !== $serverSettings->getZ());
     }
 
     public function toString() : string {
