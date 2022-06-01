@@ -12,7 +12,6 @@ use ColinHDev\CPlot\event\PlayerEnterPlotEvent;
 use ColinHDev\CPlot\event\PlayerLeavePlotEvent;
 use ColinHDev\CPlot\event\PlayerLeftPlotEvent;
 use ColinHDev\CPlot\math\CoordinateUtils;
-use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\player\settings\SettingIDs;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
@@ -22,6 +21,7 @@ use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
+use matze\cloudbridge\network\packets\types\PlayerTransferToCoordinatesPacket;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\math\Facing;
@@ -67,7 +67,7 @@ class PlayerMoveListener implements Listener {
                     return;
                 }
                 if (is_string($serverName)) {
-                    $packet = PlayerTransferToPlotPacket::createFromCoordinates(
+                    $packet = PlayerTransferToCoordinatesPacket::create(
                         $player->getName(), $serverName, $worldName,
                         $x, $to->y, $z,
                         $to->yaw, $to->pitch
