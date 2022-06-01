@@ -77,6 +77,9 @@ class AutoSubcommand extends Subcommand {
                 yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
             } else {
                 yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+                if ($this->automaticClaim) {
+                    yield from $claimSubcommand->execute($sender, []);
+                }
             }
         } else {
             /** @phpstan-var string $serverName */
