@@ -335,6 +335,28 @@ class Plot extends BasePlot {
      * @throws \RuntimeException when called outside of main thread.
      */
     public function teleportTo(Player $player, int $destination = TeleportDestination::PLOT_SPAWN_OR_EDGE) : bool {
+        if (!$this->isOnServer()) {
+            Await::f2c(
+                function() : \Generator {
+                    /** @phpstan-var string $serverName */
+                    $serverName = yield DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($this->getServerX(), $this->getServerZ());
+                    return $serverName;
+                },
+                function(string $serverName) use($player, $destination) : void {
+                    if (!($player->isConnected())) {
+                        return;
+                    }
+                    $packet = CPlotTeleportPacket::create(
+                        $player->getName(),
+                        $serverName,
+                        $this->worldName, $this->x, $this->z,
+                        $destination, false
+                    );
+                    $packet->send();
+                }
+            );
+            return true;
+        }
         if ($destination === TeleportDestination::PLOT_SPAWN_OR_EDGE || $destination === TeleportDestination::PLOT_SPAWN_OR_CENTER) {
             $flag = $this->getFlagByID(FlagIDs::FLAG_SPAWN);
             $relativeSpawn = $flag?->getValue();
@@ -342,34 +364,6 @@ class Plot extends BasePlot {
                 $world = $this->getWorld();
                 if ($world === null) {
                     return false;
-                }
-                $serverSettings = ServerSettings::getInstance();
-                $worldSize = $serverSettings->getWorldSize();
-                $serverX = (int) floor($this->x / $worldSize);
-                $serverZ = (int) floor($this->z / $worldSize);
-                if ($serverX !== $serverSettings->getX() || $serverZ !== $serverSettings->getZ()) {
-                    Await::f2c(
-                        static function() use($serverX, $serverZ) : \Generator {
-                            /** @phpstan-var string $serverName */
-                            $serverName = yield DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($serverX, $serverZ);
-                            return $serverName;
-                        },
-                        function(string $serverName) use($player, $relativeSpawn) : void {
-                            if (!($player->isConnected())) {
-                                return;
-                            }
-                            $spawn = $relativeSpawn->addVector($this->getVector3());
-                            $packet = CPlotTeleportPacket::createFromCoordinates(
-                                $player->getName(),
-                                $serverName,
-                                $this->worldName,
-                                $spawn->x, $spawn->y, $spawn->z,
-                                $relativeSpawn->yaw, $relativeSpawn->pitch
-                            );
-                            $packet->send();
-                        }
-                    );
-                    return true;
                 }
                 return $player->teleport(
                     Location::fromObject(
