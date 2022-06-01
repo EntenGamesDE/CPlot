@@ -13,7 +13,7 @@ use ColinHDev\CPlot\event\PlotMergeAsyncEvent;
 use ColinHDev\CPlot\event\PlotMergedAsyncEvent;
 use ColinHDev\CPlot\event\PlotResetAsyncEvent;
 use ColinHDev\CPlot\event\PlotWallChangeAsyncEvent;
-use ColinHDev\CPlot\packet\CPlotTeleportPacket;
+use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\player\PlayerData;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\flags\FlagManager;
@@ -341,7 +341,7 @@ class Plot extends BasePlot {
                     if (!($player->isConnected())) {
                         return;
                     }
-                    $packet = CPlotTeleportPacket::create(
+                    $packet = PlayerTransferToPlotPacket::create(
                         $player->getName(),
                         $serverName,
                         $this->worldName, $this->x, $this->z,

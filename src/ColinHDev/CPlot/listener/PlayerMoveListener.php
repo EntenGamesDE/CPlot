@@ -12,7 +12,7 @@ use ColinHDev\CPlot\event\PlayerEnterPlotEvent;
 use ColinHDev\CPlot\event\PlayerLeavePlotEvent;
 use ColinHDev\CPlot\event\PlayerLeftPlotEvent;
 use ColinHDev\CPlot\math\CoordinateUtils;
-use ColinHDev\CPlot\packet\CPlotTeleportPacket;
+use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\player\settings\SettingIDs;
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
@@ -67,7 +67,7 @@ class PlayerMoveListener implements Listener {
                     return;
                 }
                 if (is_string($serverName)) {
-                    $packet = CPlotTeleportPacket::createFromCoordinates(
+                    $packet = PlayerTransferToPlotPacket::createFromCoordinates(
                         $player->getName(), $serverName, $worldName,
                         $x, $to->y, $z,
                         $to->yaw, $to->pitch

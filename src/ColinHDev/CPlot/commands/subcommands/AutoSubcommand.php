@@ -6,7 +6,7 @@ namespace ColinHDev\CPlot\commands\subcommands;
 
 use ColinHDev\CPlot\commands\PlotCommand;
 use ColinHDev\CPlot\commands\Subcommand;
-use ColinHDev\CPlot\packet\CPlotTeleportPacket;
+use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\player\PlayerData;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\plots\PlotPlayer;
@@ -81,7 +81,7 @@ class AutoSubcommand extends Subcommand {
         } else {
             /** @phpstan-var string $serverName */
             $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($plot->getServerX(), $plot->getServerZ());
-            $packet = CPlotTeleportPacket::create(
+            $packet = PlayerTransferToPlotPacket::create(
                 $sender->getName(),
                 $serverName,
                 $plot->getWorldName(), $plot->getX(), $plot->getZ(),

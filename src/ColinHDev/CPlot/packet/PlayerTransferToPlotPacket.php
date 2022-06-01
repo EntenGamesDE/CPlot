@@ -18,7 +18,7 @@ use SOFe\AwaitGenerator\Await;
 /**
  * This packet is used to transfer a player to a plot in a specific plot world on another plot server.
  */
-class CPlotTeleportPacket extends PlayerTransferPacket {
+class PlayerTransferToPlotPacket extends PlayerTransferPacket {
 
     // The name of the plot server that the player is being transferred to.
     public string $plotServerName;
@@ -57,7 +57,7 @@ class CPlotTeleportPacket extends PlayerTransferPacket {
     }
 
     /**
-     * @phpstan-param CPlotTeleportPacket $packet
+     * @phpstan-param PlayerTransferToPlotPacket $packet
      */
     public function handle(DataPacket $packet) : void {
         Await::f2c(

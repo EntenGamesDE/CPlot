@@ -21,7 +21,7 @@ use ColinHDev\CPlot\listener\PlayerInteractListener;
 use ColinHDev\CPlot\listener\PlayerLoadListener;
 use ColinHDev\CPlot\listener\PlayerMoveListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
-use ColinHDev\CPlot\packet\CPlotTeleportPacket;
+use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\EconomyManager;
 use ColinHDev\CPlot\tasks\EntityMovementTask;
@@ -49,7 +49,7 @@ class CPlot extends PluginBase {
         $generatorManager->addGenerator(PlotGenerator::class, PlotGenerator::GENERATOR_NAME, fn() => null, true);
         $generatorManager->addGenerator(SchematicGenerator::class, SchematicGenerator::GENERATOR_NAME, fn() => null, true);
 
-        DataPacketManager::getInstance()->registerPacket(new CPlotTeleportPacket());
+        DataPacketManager::getInstance()->registerPacket(new PlayerTransferToPlotPacket());
 
         $this->getScheduler()->scheduleRepeatingTask(new EntityMovementTask(), 1);
         $this->getScheduler()->scheduleRepeatingTask(new ParticleSpawnTask(), 5);
