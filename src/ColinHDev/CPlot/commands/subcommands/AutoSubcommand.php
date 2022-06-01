@@ -6,9 +6,11 @@ namespace ColinHDev\CPlot\commands\subcommands;
 
 use ColinHDev\CPlot\commands\PlotCommand;
 use ColinHDev\CPlot\commands\Subcommand;
+use ColinHDev\CPlot\packet\CPlotTeleportPacket;
 use ColinHDev\CPlot\player\PlayerData;
 use ColinHDev\CPlot\plots\Plot;
 use ColinHDev\CPlot\plots\PlotPlayer;
+use ColinHDev\CPlot\plots\TeleportDestination;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\ResourceManager;
@@ -70,13 +72,22 @@ class AutoSubcommand extends Subcommand {
             return null;
         }
 
-        if (!($plot->teleportTo($sender))) {
-            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
-            return null;
-        }
         if ($plot->isOnServer()) {
-            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+            if (!($plot->teleportTo($sender))) {
+                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.teleportError" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+            } else {
+                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.success" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
+            }
         } else {
+            /** @phpstan-var string $serverName */
+            $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($plot->getServerX(), $plot->getServerZ());
+            $packet = CPlotTeleportPacket::create(
+                $sender->getName(),
+                $serverName,
+                $plot->getWorldName(), $plot->getX(), $plot->getZ(),
+                TeleportDestination::PLOT_SPAWN_OR_EDGE, true
+            );
+            $packet->send();
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.success.plotNotOnServer" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]);
         }
         return null;
