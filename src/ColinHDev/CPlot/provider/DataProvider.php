@@ -1038,9 +1038,10 @@ final class DataProvider {
      * @param int $serverX The X coordinate of the plot server.
      * @param int $serverZ The Z coordinate of the plot server.
      * @param string $worldName The name of the plot world.
+     * @param WorldSettings $worldSettings The settings of the plot world.
      * @return Generator<mixed, mixed, mixed, Plot|null>
      */
-    public function awaitNextFreePlotByServer(int $serverX, int $serverZ, string $worldName) : Generator {
+    public function awaitNextFreePlotByServer(int $serverX, int $serverZ, string $worldName, WorldSettings $worldSettings) : Generator {
         $worldSize = ServerSettings::getInstance()->getWorldSize();
         $rows = yield from $this->database->asyncSelect(
             self::GET_CLAIMED_PLOTS_BY_SERVER,
@@ -1062,9 +1063,6 @@ final class DataProvider {
         for ($plotX = (int) ($serverX * $worldSize); $plotX < ($serverX + 1) * $worldSize; $plotX++) {
             for ($plotZ = (int) ($serverZ * $worldSize); $plotZ < ($serverZ + 1) * $worldSize; $plotZ++) {
                 if (!isset($plots[$plotX][$plotZ])) {
-                    /** @var WorldSettings|NonWorldSettings $worldSettings */
-                    $worldSettings = yield from $this->awaitWorld($worldName);
-                    assert($worldSettings instanceof WorldSettings);
                     /** @phpstan-var Plot|null $plot */
                     $plot = yield from $this->awaitMergeOrigin(new BasePlot($worldName, $worldSettings, $plotX, $plotZ));
                     return $plot;
