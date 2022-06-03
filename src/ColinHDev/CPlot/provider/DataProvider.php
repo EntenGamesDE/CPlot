@@ -56,6 +56,7 @@ final class DataProvider {
 
     private const GET_SERVER_BY_NAME = "cplot.get.serverByName";
     private const GET_SERVER_BY_COORDINATES = "cplot.get.serverByCoordinates";
+    private const GET_SERVER_WITH_LEAST_CLAIMED_PLOTS = "cplot.get.serverWithLeastClaimedPlots";
     private const GET_PLAYERDATA_BY_IDENTIFIER = "cplot.get.playerDataByIdentifier";
     private const GET_PLAYERDATA_BY_UUID = "cplot.get.playerDataByUUID";
     private const GET_PLAYERDATA_BY_XUID = "cplot.get.playerDataByXUID";
@@ -995,6 +996,30 @@ final class DataProvider {
         /** @phpstan-var Plot|null $plot */
         $plot = yield $this->awaitPlot($plot->getWorldName(), $plotData["originX"], $plotData["originZ"]);
         return $plot;
+    }
+
+    /**
+     * Fetches asynchronously the plot server with the least amount of claimed plots from the database. If all the plots
+     * on the server are already claimed, NULL is the result, or a {@see ServerSettings} instance otherwise.
+     * Returns a {@see \Generator} function that can be handled with {@see Await} to get the result.
+     * @param string $worldName The name of the plot world.
+     * @return Generator<mixed, mixed, mixed, ServerSettings|null>
+     */
+    public function awaitServerWithLeastClaimedPlots(string $worldName) : \Generator {
+        $worldSize = ServerSettings::getInstance()->getWorldSize();
+        $rows = yield from $this->database->asyncSelect(
+            self::GET_SERVER_WITH_LEAST_CLAIMED_PLOTS,
+            [
+                "worldName" => $worldName,
+                "worldSize" => $worldSize
+            ]
+        );
+        $result = $rows[array_key_first($rows)] ?? null;
+        if (!is_array($result)) {
+            return null;
+        }
+        ["name" => $serverName, "x" => $serverX, "z" => $serverZ, "claimedPlotCount" => $claimedPlotCount] = $result;
+        return new ServerSettings($serverName, $serverX, $serverZ);
     }
 
     /**

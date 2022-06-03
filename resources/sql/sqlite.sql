@@ -193,6 +193,36 @@ SELECT mergeX, mergeZ
 FROM mergePlots
 WHERE worldName = :worldName AND originX = :originX AND originZ = :originZ;
 -- #    }
+-- #    { serverWithLeastClaimedPlots
+-- #      :worldName string
+-- #      :worldSize int
+SELECT servers.name, servers.x, servers.z (
+    (SELECT COUNT(plotPlayers.x)
+	FROM plotPlayers
+	WHERE
+	    plotPlayers.worldName = :worldName AND
+	    (plotPlayers.x BETWEEN (servers.x * :worldSize) AND ((servers.x + 1) * :worldSize - 1)) AND
+	    (plotPlayers.z BETWEEN (servers.z * :worldSize) AND ((servers.z + 1) * :worldSize - 1)) AND
+	    plotPlayers.state = 'state_owner'
+	)
+    +
+    (SELECT COUNT(mergePlots.mergeX)
+    FROM mergePlots
+    WHERE
+        mergePlots.worldName = :worldName AND
+        (mergePlots.mergeX BETWEEN (servers.x * :worldSize) AND ((servers.x + 1) * :worldSize - 1)) AND
+        (mergePlots.mergeZ BETWEEN (servers.z * :worldSize) AND ((servers.z + 1) * :worldSize - 1)) AND
+        EXISTS (
+            SELECT plotPlayers.x
+            FROM plotPlayers
+            WHERE plotPlayers.worldName = :worldName AND plotPlayers.x = originX AND plotPlayers.z = originZ AND plotPlayers.state = 'state_owner'
+        )
+    )
+) as claimedPlotCount
+FROM servers
+HAVING claimedPlotCount < (:worldSize * :worldSize)
+ORDER BY claimedPlotCount ASC LIMIT 1;
+-- #    }
 -- #    { ownedPlots
 -- #      :worldName string
 -- #      :number int
