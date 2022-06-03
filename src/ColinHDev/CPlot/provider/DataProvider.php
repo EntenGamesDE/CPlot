@@ -1060,8 +1060,8 @@ final class DataProvider {
             /** @phpstan-var array<int, non-empty-array<int, true>> $plots */
             $plots[$row["x"]][$row["z"]] = true;
         }
-        for ($plotX = (int) ($serverX * $worldSize); $plotX < ($serverX + 1) * $worldSize; $plotX++) {
-            for ($plotZ = (int) ($serverZ * $worldSize); $plotZ < ($serverZ + 1) * $worldSize; $plotZ++) {
+        for ($plotX = $serverX * $worldSize; $plotX < ($serverX + 1) * $worldSize; $plotX++) {
+            for ($plotZ = $serverZ * $worldSize; $plotZ < ($serverZ + 1) * $worldSize; $plotZ++) {
                 if (!isset($plots[$plotX][$plotZ])) {
                     /** @phpstan-var Plot|null $plot */
                     $plot = yield from $this->awaitMergeOrigin(new BasePlot($worldName, $worldSettings, $plotX, $plotZ));

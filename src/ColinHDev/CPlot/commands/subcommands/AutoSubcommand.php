@@ -14,6 +14,7 @@ use ColinHDev\CPlot\plots\TeleportDestination;
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\provider\LanguageManager;
 use ColinHDev\CPlot\ResourceManager;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\command\CommandSender;
 use pocketmine\player\Player;
@@ -65,11 +66,24 @@ class AutoSubcommand extends Subcommand {
             return null;
         }
 
-        /** @var Plot|null $plot */
-        $plot = yield DataProvider::getInstance()->awaitNextFreePlot($worldName, $worldSettings);
-        if ($plot === null) {
-            yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.noPlotFound"]);
-            return null;
+        $serverName = null;
+        /** @phpstan-var ServerSettings|null $server */
+        $server = yield from DataProvider::getInstance()->awaitServerWithLeastClaimedPlots($worldName);
+        if ($server instanceof ServerSettings) {
+            /** @var Plot|null $plot */
+            $plot = yield from DataProvider::getInstance()->awaitNextFreePlotByServer($server->getX(), $server->getZ(), $worldName, $worldSettings);
+            if ($plot === null) {
+                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.noPlotFound"]);
+                return null;
+            }
+            $serverName = $server->getName();
+        } else {
+            /** @var Plot|null $plot */
+            $plot = yield DataProvider::getInstance()->awaitNextFreePlot($worldName, $worldSettings);
+            if ($plot === null) {
+                yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($sender, ["prefix", "auto.noPlotFound"]);
+                return null;
+            }
         }
 
         if ($plot->isOnServer()) {
@@ -83,7 +97,7 @@ class AutoSubcommand extends Subcommand {
             }
         } else {
             /** @phpstan-var string $serverName */
-            $serverName = yield from DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($plot->getServerX(), $plot->getServerZ());
+            $serverName = $serverName ?? yield from DataProvider::getInstance()->awaitServerNameByCoordinatesNonNull($plot->getServerX(), $plot->getServerZ());
             $packet = PlayerTransferToPlotPacket::create(
                 $sender->getName(),
                 $serverName,
