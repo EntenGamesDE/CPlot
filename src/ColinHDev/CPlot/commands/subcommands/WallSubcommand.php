@@ -109,7 +109,7 @@ class WallSubcommand extends Subcommand {
         }
         if (!$plot->isOnServer()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "wall.plotNotOnServer"]);
-            return null;
+            return;
         }
 
         if (!$player->hasPermission("cplot.admin.wall")) {

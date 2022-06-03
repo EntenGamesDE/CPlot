@@ -109,7 +109,7 @@ class BorderSubcommand extends Subcommand {
         }
         if (!$plot->isOnServer()) {
             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage($player, ["prefix", "border.plotNotOnServer"]);
-            return null;
+            return;
         }
 
         if (!$player->hasPermission("cplot.admin.border")) {

@@ -39,11 +39,11 @@ class EntityExplodeListener implements Listener {
             $event->cancel();
             return;
         }
-        if (!$plot->isOnServer()) {
-            $event->cancel();
-            return;
-        }
         if ($plot instanceof Plot) {
+            if (!$plot->isOnServer()) {
+                $event->cancel();
+                return;
+            }
             /** @var BooleanAttribute $flag */
             $flag = $plot->getFlagNonNullByID(FlagIDs::FLAG_EXPLOSION);
             if ($flag->getValue() === true) {

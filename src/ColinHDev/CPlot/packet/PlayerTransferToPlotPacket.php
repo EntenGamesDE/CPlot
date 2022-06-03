@@ -64,6 +64,9 @@ class PlayerTransferToPlotPacket extends PlayerTransferPacket {
             static function() use($packet) : \Generator {
                 /** @phpstan-var Plot|null $plot */
                 $plot = yield from DataProvider::getInstance()->awaitPlot($packet->plotWorldName, $packet->plotX, $packet->plotZ);
+                if (!($plot instanceof Plot)) {
+                    return;
+                }
                 $server = Server::getInstance();
                 $player = $server->getPlayerExact($packet->playerName);
                 if (!$player instanceof Player) {
