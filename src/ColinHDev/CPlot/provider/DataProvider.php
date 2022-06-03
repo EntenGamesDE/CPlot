@@ -67,6 +67,7 @@ final class DataProvider {
     private const GET_PLOT_BY_ALIAS = "cplot.get.plotByAlias";
     private const GET_ORIGINPLOT = "cplot.get.originPlot";
     private const GET_MERGEPLOTS = "cplot.get.mergePlots";
+    private const GET_CLAIMED_PLOTS_BY_SERVER = "cplot.get.claimedPlotsByServer";
     private const GET_OWNED_PLOTS = "cplot.get.ownedPlots";
     private const GET_PLOTPLAYERS = "cplot.get.plotPlayers";
     private const GET_PLOTS_BY_PLOTPLAYER = "cplot.get.plotsByPlotPlayer";
@@ -229,6 +230,30 @@ final class DataProvider {
             $serverName = $rows[array_key_first($rows)]["name"];
         }
         return $serverName;
+    }
+
+    /**
+     * Fetches asynchronously the plot server with the least amount of claimed plots from the database. If all the plots
+     * on the server are already claimed, NULL is the result, or a {@see ServerSettings} instance otherwise.
+     * Returns a {@see \Generator} function that can be handled with {@see Await} to get the result.
+     * @param string $worldName The name of the plot world.
+     * @return Generator<mixed, mixed, mixed, ServerSettings|null>
+     */
+    public function awaitServerWithLeastClaimedPlots(string $worldName) : Generator {
+        $worldSize = ServerSettings::getInstance()->getWorldSize();
+        $rows = yield from $this->database->asyncSelect(
+            self::GET_SERVER_WITH_LEAST_CLAIMED_PLOTS,
+            [
+                "worldName" => $worldName,
+                "worldSize" => $worldSize
+            ]
+        );
+        $result = $rows[array_key_first($rows)] ?? null;
+        if (!is_array($result)) {
+            return null;
+        }
+        ["name" => $serverName, "x" => $serverX, "z" => $serverZ, "claimedPlotCount" => $claimedPlotCount] = $result;
+        return new ServerSettings($serverName, $serverX, $serverZ);
     }
 
     /**
@@ -1005,21 +1030,48 @@ final class DataProvider {
      * @param string $worldName The name of the plot world.
      * @return Generator<mixed, mixed, mixed, ServerSettings|null>
      */
-    public function awaitServerWithLeastClaimedPlots(string $worldName) : \Generator {
+
+    /**
+     * Fetches asynchronously all {@see Plot}s and {@see MergePlot}s in a plot world on a certain plot server from the
+     * database. Returns a {@see \Generator} that returns a plot that is on that server and has no data in the database
+     * or NULL if no such plot could be found, by using {@see Await}.
+     * @param int $serverX The X coordinate of the plot server.
+     * @param int $serverZ The Z coordinate of the plot server.
+     * @param string $worldName The name of the plot world.
+     * @return Generator<mixed, mixed, mixed, Plot|null>
+     */
+    public function awaitNextFreePlotByServer(int $serverX, int $serverZ, string $worldName) : Generator {
         $worldSize = ServerSettings::getInstance()->getWorldSize();
         $rows = yield from $this->database->asyncSelect(
-            self::GET_SERVER_WITH_LEAST_CLAIMED_PLOTS,
+            self::GET_CLAIMED_PLOTS_BY_SERVER,
             [
+                "serverX" => $serverX,
+                "serverZ" => $serverZ,
                 "worldName" => $worldName,
                 "worldSize" => $worldSize
             ]
         );
-        $result = $rows[array_key_first($rows)] ?? null;
-        if (!is_array($result)) {
+        if (count($rows) === $worldSize ** 2) {
             return null;
         }
-        ["name" => $serverName, "x" => $serverX, "z" => $serverZ, "claimedPlotCount" => $claimedPlotCount] = $result;
-        return new ServerSettings($serverName, $serverX, $serverZ);
+        $plots = [];
+        foreach ($rows as $row) {
+            /** @phpstan-var array<int, non-empty-array<int, true>> $plots */
+            $plots[$row["x"]][$row["z"]] = true;
+        }
+        for ($plotX = (int) ($serverX * $worldSize); $plotX < ($serverX + 1) * $worldSize; $plotX++) {
+            for ($plotZ = (int) ($serverZ * $worldSize); $plotZ < ($serverZ + 1) * $worldSize; $plotZ++) {
+                if (!isset($plots[$plotX][$plotZ])) {
+                    /** @var WorldSettings|NonWorldSettings $worldSettings */
+                    $worldSettings = yield from $this->awaitWorld($worldName);
+                    assert($worldSettings instanceof WorldSettings);
+                    /** @phpstan-var Plot|null $plot */
+                    $plot = yield from $this->awaitMergeOrigin(new BasePlot($worldName, $worldSettings, $plotX, $plotZ));
+                    return $plot;
+                }
+            }
+        }
+        return null;
     }
 
     /**
