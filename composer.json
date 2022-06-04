@@ -1,7 +1,7 @@
 {
   "name": "colinhdev/cplot",
   "require": {
-    "pocketmine/pocketmine-mp": "4.0.0",
+    "pocketmine/pocketmine-mp": "dev-stable as 4.0.0",
     "nethergamesmc/bedrock-data": "dev-master",
     "nethergamesmc/bedrock-protocol": "dev-master",
     "sof3/await-generator": "^3.4.1",
@@ -19,6 +19,10 @@
     "phpstan/extension-installer": "^1.1"
   },
   "repositories": {
+    "pocketmine-mp": {
+      "type": "vcs",
+      "url":  "git@github.com:EntenGamesDE/PocketMine-MP.git"
+    },
     "bedrock-protocol": {
       "type": "vcs",
       "url":  "git@github.com:NetherGamesMC/BedrockProtocol.git"
