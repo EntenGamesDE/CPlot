@@ -11,7 +11,7 @@
     "cooldogedev/bedrockeconomy": "^2.0.8",
     "colinhdev/libasyncevent": "^1.0.0",
     "entengamesde/cloudbridge": "dev-main",
-    "entengamesde/managersystem": "^2.1.0"
+    "entengamesde/managersystem": "dev-main"
   },
   "require-dev": {
     "phpstan/phpstan": "^1.6.7",
@@ -52,16 +52,8 @@
       "url":  "git@github.com:EntenGamesDE/CloudBridge.git"
     },
     "managersystem": {
-      "type": "package",
-      "package": {
-        "name": "entengamesde/managersystem",
-        "version": "2.1.0",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/EntenGamesDE/ManagerSystem",
-          "reference": "pm4"
-        }
-      }
+      "type": "vcs",
+      "url":  "git@github.com:EntenGamesDE/ManagerSystem.git"
     }
   }
 }

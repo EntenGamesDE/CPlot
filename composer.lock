@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b6afc98d00c8b7f0d787c5f26e32da03",
+    "content-hash": "585268fa0d7d7f2409a4ca0454d89f8a",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -172,19 +172,19 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:EntenGamesDE/CloudBridge.git",
-                "reference": "b4a6acd8ef9a0d95391ba35e200e2676a1af4200"
+                "reference": "7f0824a49857f480f5a0141ecf43c951efb57007"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EntenGamesDE/CloudBridge/zipball/b4a6acd8ef9a0d95391ba35e200e2676a1af4200",
-                "reference": "b4a6acd8ef9a0d95391ba35e200e2676a1af4200",
+                "url": "https://api.github.com/repos/EntenGamesDE/CloudBridge/zipball/7f0824a49857f480f5a0141ecf43c951efb57007",
+                "reference": "7f0824a49857f480f5a0141ecf43c951efb57007",
                 "shasum": ""
             },
             "require": {
-                "entengamesde/managersystem": "^2.1.0",
+                "entengamesde/managersystem": "dev-main",
                 "nethergamesmc/bedrock-data": "dev-master",
                 "nethergamesmc/bedrock-protocol": "dev-master",
-                "pocketmine/pocketmine-mp": "4.0.0"
+                "pocketmine/pocketmine-mp": "dev-stable as 4.0.0"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.1",
@@ -193,17 +193,36 @@
             },
             "default-branch": true,
             "type": "library",
-            "time": "2022-06-01T15:45:11+00:00"
+            "time": "2022-06-08T22:46:25+00:00"
         },
         {
             "name": "entengamesde/managersystem",
-            "version": "2.1.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/EntenGamesDE/ManagerSystem",
-                "reference": "pm4"
+                "url": "git@github.com:EntenGamesDE/ManagerSystem.git",
+                "reference": "f6a60c25e1c99b202c32529b34b3c3b5e4864df5"
             },
-            "type": "library"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/EntenGamesDE/ManagerSystem/zipball/f6a60c25e1c99b202c32529b34b3c3b5e4864df5",
+                "reference": "f6a60c25e1c99b202c32529b34b3c3b5e4864df5",
+                "shasum": ""
+            },
+            "require": {
+                "entengamesde/cloudbridge": "dev-main",
+                "nethergamesmc/bedrock-data": "dev-master",
+                "nethergamesmc/bedrock-protocol": "dev-master",
+                "pocketmine/pocketmine-mp": "dev-stable as 4.0.0"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^1.6.7",
+                "phpstan/phpstan-strict-rules": "^1.2.3"
+            },
+            "default-branch": true,
+            "type": "library",
+            "time": "2022-06-08T22:41:13+00:00"
         },
         {
             "name": "fgrosse/phpasn1",
@@ -286,12 +305,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:NetherGamesMC/BedrockData.git",
-                "reference": "da48a0f88887b2943d2bcf54ed541c198aec1fc0"
+                "reference": "f74589fe97b3572d156b21bfbd8e30e4b2f0f789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/da48a0f88887b2943d2bcf54ed541c198aec1fc0",
-                "reference": "da48a0f88887b2943d2bcf54ed541c198aec1fc0",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/f74589fe97b3572d156b21bfbd8e30e4b2f0f789",
+                "reference": "f74589fe97b3572d156b21bfbd8e30e4b2f0f789",
                 "shasum": ""
             },
             "default-branch": true,
@@ -300,7 +319,7 @@
                 "CC0-1.0"
             ],
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
-            "time": "2022-04-20T14:25:30+00:00"
+            "time": "2022-06-07T17:21:57+00:00"
         },
         {
             "name": "nethergamesmc/bedrock-protocol",
@@ -308,12 +327,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:NetherGamesMC/BedrockProtocol.git",
-                "reference": "7a8dde2449c8ab8f6e628eaf3442d5c7871aade0"
+                "reference": "2b54c52b103e187e807c37161948f674ead100f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/7a8dde2449c8ab8f6e628eaf3442d5c7871aade0",
-                "reference": "7a8dde2449c8ab8f6e628eaf3442d5c7871aade0",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/2b54c52b103e187e807c37161948f674ead100f6",
+                "reference": "2b54c52b103e187e807c37161948f674ead100f6",
                 "shasum": ""
             },
             "require": {
@@ -327,7 +346,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.7.7",
+                "phpstan/phpstan": "1.7.11",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -353,7 +372,7 @@
                 "LGPL-3.0"
             ],
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
-            "time": "2022-06-02T15:19:16+00:00"
+            "time": "2022-06-08T11:03:08+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -1703,16 +1722,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.7.10",
+            "version": "1.7.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "25e069474cf00215b0f64c60a26230908ef3eefa"
+                "reference": "62fcadcde81b4037e42ad2489119d31c46f00191"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/25e069474cf00215b0f64c60a26230908ef3eefa",
-                "reference": "25e069474cf00215b0f64c60a26230908ef3eefa",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/62fcadcde81b4037e42ad2489119d31c46f00191",
+                "reference": "62fcadcde81b4037e42ad2489119d31c46f00191",
                 "shasum": ""
             },
             "require": {
@@ -1738,7 +1757,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.7.10"
+                "source": "https://github.com/phpstan/phpstan/tree/1.7.11"
             },
             "funding": [
                 {
@@ -1758,7 +1777,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-06-03T14:12:23+00:00"
+            "time": "2022-06-07T08:47:03+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -1823,7 +1842,8 @@
         "nethergamesmc/bedrock-data": 20,
         "nethergamesmc/bedrock-protocol": 20,
         "sof3/await-std": 20,
-        "entengamesde/cloudbridge": 20
+        "entengamesde/cloudbridge": 20,
+        "entengamesde/managersystem": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
