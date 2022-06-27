@@ -15,11 +15,13 @@ use ColinHDev\CPlot\listener\ChunkPopulateListener;
 use ColinHDev\CPlot\listener\EntityDamageByEntityListener;
 use ColinHDev\CPlot\listener\EntityExplodeListener;
 use ColinHDev\CPlot\listener\EntityItemPickupListener;
+use ColinHDev\CPlot\listener\EntityShootBowListener;
 use ColinHDev\CPlot\listener\EntityTrampleFarmlandListener;
 use ColinHDev\CPlot\listener\PlayerDropItemListener;
 use ColinHDev\CPlot\listener\PlayerInteractListener;
 use ColinHDev\CPlot\listener\PlayerLoadListener;
 use ColinHDev\CPlot\listener\PlayerMoveListener;
+use ColinHDev\CPlot\listener\ProjectileLaunchListener;
 use ColinHDev\CPlot\listener\StructureGrowListener;
 use ColinHDev\CPlot\packet\PlayerTransferToPlotPacket;
 use ColinHDev\CPlot\provider\DataProvider;
@@ -66,10 +68,12 @@ class CPlot extends PluginBase {
         $pluginManager->registerEvents(new EntityDamageByEntityListener(), $this);
         $pluginManager->registerEvents(new EntityExplodeListener(), $this);
         $pluginManager->registerEvents(new EntityItemPickupListener(), $this);
+        $pluginManager->registerEvents(new EntityShootBowListener(), $this);
         $pluginManager->registerEvents(new EntityTrampleFarmlandListener(), $this);
         $pluginManager->registerEvents(new PlayerDropItemListener(), $this);
         $pluginManager->registerEvents(new PlayerInteractListener(), $this);
         $pluginManager->registerEvents(new PlayerMoveListener(), $this);
+        $pluginManager->registerEvents(new ProjectileLaunchListener(), $this);
         $pluginManager->registerEvents(new PlayerLoadListener(), $this);
         $pluginManager->registerEvents(new StructureGrowListener(), $this);
 

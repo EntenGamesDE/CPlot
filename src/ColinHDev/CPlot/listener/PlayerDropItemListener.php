@@ -72,11 +72,6 @@ class PlayerDropItemListener implements Listener {
             if ($flag->getValue() === true) {
                 return;
             }
-
-        } else {
-            if ($player->hasPermission("cplot.interact.road")) {
-                return;
-            }
         }
 
         $event->cancel();
