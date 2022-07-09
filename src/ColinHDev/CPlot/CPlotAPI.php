@@ -18,6 +18,7 @@ use pocketmine\utils\VersionString;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use RuntimeException;
+use SOFe\AwaitGenerator\Await;
 use function abs;
 use function ceil;
 use function count;
@@ -48,6 +49,28 @@ final class CPlotAPI {
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    /**
+     * Tries to load the server name of a server by its coordinates.
+     *
+     * @param int $serverX The X coordinate of the server
+     * @param int $serverZ The Z coordinate of the server
+     *
+     * @param Closure $onSuccess The callback function to call if the server name was successfully loaded from the
+     *                           database.
+     * @phpstan-param (\Closure(string|null):void)|null $onSuccess
+     *
+     * @param Closure $onError The callback function to call if something went wrong during the loading of the
+     *                         server name from the database.
+     * @phpstan-param (Closure():void)|(Closure(Throwable):void)|null $onError
+     */
+    public function loadServerNameByCoordinates(int $serverX, int $serverZ, Closure $onSuccess, Closure $onError) : void {
+        Await::g2c(
+            DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ),
+            $onSuccess,
+            $onError
+        );
     }
 
     /**
