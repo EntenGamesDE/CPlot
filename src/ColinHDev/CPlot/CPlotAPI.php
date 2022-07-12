@@ -60,20 +60,23 @@ final class CPlotAPI {
      * @param int $serverX The X coordinate of the server
      * @param int $serverZ The Z coordinate of the server
      *
-     * @param Closure $onSuccess The callback function to call if the server name was successfully loaded from the
-     *                           database.
-     * @phpstan-param (\Closure(string|null):void)|null $onSuccess
-     *
-     * @param Closure $onError The callback function to call if something went wrong during the loading of the
-     *                         server name from the database.
-     * @phpstan-param (Closure():void)|(Closure(Throwable):void)|null $onError
+     * Returns a {@see Promise} that resolves the server name or null if a server with the given coordinates does not exist.
+     * @return Promise
+     * @phpstan-return Promise<string|null>
      */
-    public function loadServerNameByCoordinates(int $serverX, int $serverZ, Closure $onSuccess, Closure $onError) : void {
+    public function loadServerNameByCoordinates(int $serverX, int $serverZ) : Promise {
+        /** @phpstan-var PromiseResolver<string|null> $resolver */
+        $resolver = new PromiseResolver();
         Await::g2c(
             DataProvider::getInstance()->awaitServerNameByCoordinates($serverX, $serverZ),
-            $onSuccess,
-            $onError
+            static function(?string $serverName) use($resolver) : void {
+                $resolver->resolveSilent($serverName);
+            },
+            static function(Throwable $error) use($resolver) : void {
+                $resolver->rejectSilent($error);
+            },
         );
+        return $resolver->getPromise();
     }
 
     /**
