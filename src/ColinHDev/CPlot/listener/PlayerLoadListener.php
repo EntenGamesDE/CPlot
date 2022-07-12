@@ -12,6 +12,9 @@ use SOFe\AwaitGenerator\Await;
 
 class PlayerLoadListener implements Listener {
 
+    /**
+     * @handleCancelled false
+     */
     public function onPlayerLogin(PlayerLoadEvent $event) : void {
         $player = $event->getPlayer();
         Await::g2c(
@@ -21,7 +24,7 @@ class PlayerLoadListener implements Listener {
                 $player->getName()
             ),
             null,
-            static function (\Throwable $error) use ($player) : void {
+            static function() use ($player) : void {
                 if ($player->isConnected()) {
                     $player->kick(
                         LanguageManager::getInstance()->getProvider()->translateString(["prefix", "player.login.savePlayerDataError"])

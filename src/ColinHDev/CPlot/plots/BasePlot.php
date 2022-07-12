@@ -6,7 +6,6 @@ namespace ColinHDev\CPlot\plots;
 
 use ColinHDev\CPlot\provider\DataProvider;
 use ColinHDev\CPlot\ServerSettings;
-use ColinHDev\CPlot\worlds\NonWorldSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\entity\Location;
 use pocketmine\math\Facing;
@@ -190,7 +189,7 @@ class BasePlot {
 
     /**
      * @deprecated
-     * @phpstan-return \Generator<int, mixed, WorldSettings|NonWorldSettings|Plot|null, BasePlot|null>
+     * @phpstan-return \Generator<mixed, mixed, mixed, BasePlot|null>
      */
     public static function awaitFromPosition(Position $position) : \Generator {
         $worldName = $position->getWorld()->getFolderName();

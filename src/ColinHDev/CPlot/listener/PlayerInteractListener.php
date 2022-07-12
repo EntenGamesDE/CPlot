@@ -6,11 +6,9 @@ namespace ColinHDev\CPlot\listener;
 
 use ColinHDev\CPlot\attributes\BlockListAttribute;
 use ColinHDev\CPlot\attributes\BooleanAttribute;
-use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\flags\FlagIDs;
 use ColinHDev\CPlot\plots\Plot;
-use ColinHDev\CPlot\provider\DataProvider;
-use ColinHDev\CPlot\provider\LanguageManager;
+use ColinHDev\CPlot\utils\APIHolder;
 use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\block\Block;
@@ -19,38 +17,31 @@ use pocketmine\block\FenceGate;
 use pocketmine\block\Trapdoor;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerInteractEvent;
-use Ramsey\Uuid\Uuid;
 
 class PlayerInteractListener implements Listener {
+    use APIHolder;
 
+    /**
+     * @handleCancelled false
+     */
     public function onPlayerInteract(PlayerInteractEvent $event) : void {
-        if ($event->isCancelled()) {
-            return;
-        }
-
         $position = $event->getBlock()->getPosition();
-        $worldName = $position->getWorld()->getFolderName();
-        $worldSettings = DataProvider::getInstance()->loadWorldIntoCache($worldName);
-        if ($worldSettings === null) {
-            LanguageManager::getInstance()->getProvider()->sendMessage($event->getPlayer(), ["prefix", "player.interact.worldNotLoaded"]);
-            $event->cancel();
+        /** @phpstan-var WorldSettings|false|null $worldSettings */
+        $worldSettings = $this->getAPI()->getOrLoadWorldSettings($position->getWorld())->getResult();
+        if (!($worldBorder instanceof WorldSettings)) {
+            if ($worldBorder !== false) {
+                $event->cancel();
+            }
             return;
         }
-        if (!$worldSettings instanceof WorldSettings) {
-            return;
-        }
-        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($position->getWorld()->getFolderName(), $worldSettings);
         if (!$worldBorder->isVectorInside($position->asVector3())) {
             $event->cancel();
             return;
         }
 
-        $plot = Plot::loadFromPositionIntoCache($position);
-        if ($plot instanceof BasePlot && !$plot instanceof Plot) {
-            LanguageManager::getInstance()->getProvider()->sendMessage($event->getPlayer(), ["prefix", "player.interact.plotNotLoaded"]);
-            $event->cancel();
-            return;
-        }
+        /** @phpstan-var Plot|false|null $plot */
+        $plot = $this->getAPI()->getOrLoadPlotAtPosition($position)->getResult();
         if ($plot instanceof Plot) {
             $player = $event->getPlayer();
             if ($player->hasPermission("cplot.interact.plot")) {
@@ -89,7 +80,7 @@ class PlayerInteractListener implements Listener {
                 }
             }
 
-        } else {
+        } else if ($plot === false) {
             if ($event->getPlayer()->hasPermission("cplot.interact.road")) {
                 return;
             }
