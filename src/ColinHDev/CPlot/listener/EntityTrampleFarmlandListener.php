@@ -23,8 +23,8 @@ class EntityTrampleFarmlandListener implements Listener {
         $position = $event->getBlock()->getPosition();
         /** @phpstan-var WorldSettings|false|null $worldSettings */
         $worldSettings = $this->getAPI()->getOrLoadWorldSettings($position->getWorld())->getResult();
-        if (!($worldBorder instanceof WorldSettings)) {
-            if ($worldBorder !== false) {
+        if (!($worldSettings instanceof WorldSettings)) {
+            if ($worldSettings !== false) {
                 $event->cancel();
             }
             return;

@@ -24,16 +24,15 @@ class BlockBreakListener implements Listener {
      */
     public function onBlockBreak(BlockBreakEvent $event) : void {
         $position = $event->getBlock()->getPosition();
-        /** @phpstan-var WorldSettings|false|null $isPlotWorld */
-        $isPlotWorld = $this->getAPI()->getOrLoadWorldSettings($position->getWorld())->getResult();
-        if ($isPlotWorld !== true) {
-            if ($isPlotWorld !== false) {
+        /** @phpstan-var WorldSettings|false|null $worldSettings */
+        $worldSettings = $this->getAPI()->getOrLoadWorldSettings($position->getWorld())->getResult();
+        if (!($worldSettings instanceof WorldSettings)) {
+            if ($worldSettings !== false) {
                 $event->cancel();
             }
             return;
         }
-
-        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($position->getWorld()->getFolderName(), $worldSettings);
         if (!$worldBorder->isVectorInside($position->asVector3())) {
             $event->cancel();
             return;

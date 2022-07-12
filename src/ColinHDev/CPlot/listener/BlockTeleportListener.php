@@ -6,6 +6,7 @@ namespace ColinHDev\CPlot\listener;
 
 use ColinHDev\CPlot\plots\BasePlot;
 use ColinHDev\CPlot\plots\Plot;
+use ColinHDev\CPlot\ServerSettings;
 use ColinHDev\CPlot\utils\APIHolder;
 use ColinHDev\CPlot\worlds\WorldSettings;
 use pocketmine\event\block\BlockTeleportEvent;
@@ -21,7 +22,7 @@ class BlockTeleportListener implements Listener {
     public function onBlockTeleport(BlockTeleportEvent $event) : void {
         $fromPosition = $event->getBlock()->getPosition();
         $world = $fromPosition->getWorld();
-        /** @phpstan-var WorldSettings|false|null $isPlotWorld */
+        /** @phpstan-var WorldSettings|false|null $worldSettings */
         $worldSettings = $this->getAPI()->getOrLoadWorldSettings($world)->getResult();
         if (!($worldSettings instanceof WorldSettings)) {
             if ($worldSettings !== false) {
@@ -29,9 +30,8 @@ class BlockTeleportListener implements Listener {
             }
             return;
         }
-        $toVector3 = $event->getTo();
-        $worldBorder = ServerSettings::getInstance()->getWorldBorder($worldName, $worldSettings);
-        if (!$worldBorder->isVectorInside($toVector3)) {
+        $worldBorder = ServerSettings::getInstance()->getWorldBorder($world->getFolderName(), $worldSettings);
+        if (!$worldBorder->isVectorInside($event->getTo())) {
             $event->cancel();
             return;
         }

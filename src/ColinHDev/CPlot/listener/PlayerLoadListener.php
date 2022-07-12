@@ -15,7 +15,7 @@ class PlayerLoadListener implements Listener {
     /**
      * @handleCancelled false
      */
-    public function onPlayerLogin(PlayerLoadEvent $event) : void {
+    public function onPlayerLoad(PlayerLoadEvent $event) : void {
         $player = $event->getPlayer();
         Await::g2c(
             DataProvider::getInstance()->updatePlayerData(
