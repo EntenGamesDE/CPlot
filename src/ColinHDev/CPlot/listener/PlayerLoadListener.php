@@ -12,9 +12,6 @@ use SOFe\AwaitGenerator\Await;
 
 class PlayerLoadListener implements Listener {
 
-    /**
-     * @handleCancelled false
-     */
     public function onPlayerLoad(PlayerLoadEvent $event) : void {
         $player = $event->getPlayer();
         Await::g2c(
