@@ -82,9 +82,9 @@ class PlayerMoveListener implements Listener {
                         $to->yaw, $to->pitch
                     );
                     $packet->send();
-                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.teleportSoon"]);
+                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "playerMove.serverTransfer.teleportSoon"]);
                 } else {
-                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "player.move.serverTransfer.serverNotFound"]);
+                    LanguageManager::getInstance()->getProvider()->sendMessage($player, ["prefix", "playerMove.serverTransfer.serverNotFound"]);
                 }
                 $worldMiddle = ServerSettings::getInstance()->getWorldMiddle($worldName, $worldSettings);
                 $toWorldMiddle = $worldMiddle->subtractVector($to);
