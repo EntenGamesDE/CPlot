@@ -301,7 +301,7 @@ final class DataProvider {
             }
         }
 
-        /** @phpstan-var array<(not-empty-array{playerID: int, playerUUID: string|null, playerXUID: string|null, playerName: string|null, lastJoin: string})> $rows */
+        /** @phpstan-var array<array{playerID: int, playerUUID: string|null, playerXUID: string|null, playerName: string|null, lastJoin: string}> $rows */
         $rows = yield from $this->database->asyncSelect(
             self::GET_PLAYERDATA_BY_DATA,
             ["playerUUID" => $playerUUID, "playerXUID" => $playerXUID, "playerName" => $playerName]
@@ -652,7 +652,7 @@ final class DataProvider {
         Await::g2c(
             $this->awaitWorld($worldName),
             $onSuccess,
-            $onError === null ? [] : [$onError]
+            $onError ?? []
         );
         return null;
     }
@@ -746,7 +746,7 @@ final class DataProvider {
         Await::g2c(
             $this->awaitPlot($worldName, $x, $z),
             $onSuccess,
-            $onError === null ? [] : [$onError]
+            $onError ?? []
         );
         return null;
     }
@@ -872,12 +872,18 @@ final class DataProvider {
         $plotPlayerContainer = new PlotPlayerContainer();
         /** @phpstan-var array{playerID: int, state: string, addTime: string} $row */
         foreach ($rows as $row) {
+            /** @phpstan-var string $state */
+            $state = $row["state"];
+            if (!isset(PlotPlayer::STATES[$state])) {
+                continue;
+            }
+            /** @phpstan-var PlotPlayer::STATE_* $state */
             /** @phpstan-var PlayerData $playerData */
             $playerData = yield $this->awaitPlayerDataByID($row["playerID"]);
             $addTime = \DateTime::createFromFormat("d.m.Y H:i:s", $row["addTime"]);
             $plotPlayerContainer->addPlotPlayer(new PlotPlayer(
                 $playerData,
-                $row["state"],
+                $state,
                 $addTime instanceof \DateTime ? $addTime->getTimestamp() : time()
             ));
         }
@@ -1089,7 +1095,7 @@ final class DataProvider {
         Await::g2c(
             $this->awaitMergeOrigin($plot),
             $onSuccess,
-            $onError === null ? [] : [$onError]
+            $onError ?? []
         );
         return null;
     }

@@ -28,7 +28,11 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\TextFormat;
 use SOFe\AwaitGenerator\Await;
+use function array_map;
+use function implode;
+use function strlen;
 
 class PlayerMoveListener implements Listener {
     use APIHolder;
@@ -203,7 +207,7 @@ class PlayerMoveListener implements Listener {
                         if ($value === $flag->getValue()) {
                             yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage(
                                 $player,
-                                ["prefix", "player.move.setting.warn_flag" => [$flag->getID(), $flag->toString()]]
+                                ["prefix", "playerMove.setting.warn_flag" => [$flag->getID(), $flag->toString()]]
                             );
                             continue 2;
                         }
@@ -212,13 +216,13 @@ class PlayerMoveListener implements Listener {
             }
 
             // title flag && message flag
-            $title = "";
+            $tip = "";
             /** @var BooleanAttribute $flag */
             $flag = $plot->getFlagNonNullByID(FlagIDs::FLAG_TITLE);
             if ($flag->getValue() === true) {
-                $title .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                $tip .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
                     $player,
-                    ["player.move.plotEnter.title.coordinates" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]
+                    ["playerMove.plotEnter.tip.coordinates" => [$plot->getWorldName(), $plot->getX(), $plot->getZ()]]
                 );
                 if ($plot->hasPlotOwner()) {
                     $plotOwners = [];
@@ -228,24 +232,48 @@ class PlayerMoveListener implements Listener {
                     }
                     $separator = yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
                         $player,
-                        "player.move.plotEnter.title.owner.separator"
+                        "playerMove.plotEnter.tip.owner.separator"
                     );
                     $list = implode($separator, $plotOwners);
-                    $title .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                    $tip .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
                         $player,
-                        ["player.move.plotEnter.title.owner" => $list]
+                        ["playerMove.plotEnter.tip.owner" => $list]
+                    );
+                } else {
+                    $tip .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                        $player,
+                        "playerMove.plotEnter.tip.claimable"
                     );
                 }
             }
             /** @var StringAttribute $flag */
             $flag = $plot->getFlagNonNullByID(FlagIDs::FLAG_MESSAGE);
             if ($flag->getValue() !== "") {
-                $title .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
+                $tip .= yield from LanguageManager::getInstance()->getProvider()->awaitTranslationForCommandSender(
                     $player,
-                    ["player.move.plotEnter.title.flag.message" => $flag->getValue()]
+                    ["playerMove.plotEnter.tip.flag.message" => $flag->getValue()]
                 );
             }
-            $player->sendTip($title);
+            $tipParts = explode(TextFormat::EOL, $tip);
+            if (count($tipParts) > 1) {
+                $longestPartLength = max(array_map(
+                    static function(string $part) : int {
+                        return strlen(TextFormat::clean($part));
+                    },
+                    $tipParts
+                ));
+                $tipParts = array_map(
+                    static function(string $part) use($longestPartLength) : string {
+                        $paddingSize = (int) floor(($longestPartLength - strlen(TextFormat::clean($part))) / 2);
+                        if ($paddingSize <= 0) {
+                            return $part;
+                        }
+                        return str_repeat(" ", $paddingSize) . $part;
+                    },
+                    $tipParts
+                );
+            }
+            $player->sendTip(implode(TextFormat::EOL, $tipParts));
 
             // plot_enter flag
             /** @var BooleanAttribute $flag */
@@ -256,7 +284,7 @@ class PlayerMoveListener implements Listener {
                     if ($owner instanceof Player) {
                         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage(
                             $owner,
-                            ["player.move.plotEnter.flag.plot_enter" => [$player->getName(), $plot->getWorldName(), $plot->getX(), $plot->getZ()]]
+                            ["playerMove.plotEnter.flag.plot_enter" => [$player->getName(), $plot->getWorldName(), $plot->getX(), $plot->getZ()]]
                         );
                     }
                 }
@@ -282,7 +310,7 @@ class PlayerMoveListener implements Listener {
                     if ($owner instanceof Player) {
                         yield from LanguageManager::getInstance()->getProvider()->awaitMessageSendage(
                             $owner,
-                            ["player.move.plotEnter.flag.plot_leave" => [$player->getName(), $plot->getWorldName(), $plot->getX(), $plot->getZ()]]
+                            ["playerMove.plotEnter.flag.plot_leave" => [$player->getName(), $plot->getWorldName(), $plot->getX(), $plot->getZ()]]
                         );
                     }
                 }

@@ -20,7 +20,7 @@ class BlockBurnListener implements Listener {
      * @handleCancelled false
      */
     public function onBlockBurn(BlockBurnEvent $event) : void {
-        $position = $event->getBlock()->getPosition();
+        $position = $event->getCausingBlock()->getPosition();
         /** @phpstan-var WorldSettings|false|null $worldSettings */
         $worldSettings = $this->getAPI()->getOrLoadWorldSettings($position->getWorld())->getResult();
         if (!($worldSettings instanceof WorldSettings)) {
@@ -37,7 +37,8 @@ class BlockBurnListener implements Listener {
 
         /** @phpstan-var Plot|false|null $plot */
         $plot = $this->getAPI()->getOrLoadPlotAtPosition($position)->getResult();
-        if ($plot instanceof Plot) {
+        // We not only need to check if the causing block is on the plot but also if that applies for the changed one.
+        if ($plot instanceof Plot && $plot->isOnPlot($event->getBlock()->getPosition())) {
             /** @var BooleanAttribute $flag */
             $flag = $plot->getFlagNonNullByID(FlagIDs::FLAG_BURNING);
             if ($flag->getValue() === true) {
