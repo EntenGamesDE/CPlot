@@ -13,6 +13,7 @@ use pocketmine\math\Vector3;
 use pocketmine\Server;
 use pocketmine\world\Position;
 use pocketmine\world\World;
+use function str_starts_with;
 
 class BasePlot {
 
@@ -142,6 +143,12 @@ class BasePlot {
      * Returns TRUE if this plot is on this current plot server or FALSE if it is on another one.
      */
     public function isOnServer() : bool {
+        if (!str_starts_with(Server::getInstance()->getMotd(), "CityBuild-")) {
+            return false;
+        }
+        if ($this->getWorld() === null) {
+            return false;
+        }
         $serverSettings = ServerSettings::getInstance();
         return !($this->getServerX() !== $serverSettings->getX() || $this->getServerZ() !== $serverSettings->getZ());
     }
